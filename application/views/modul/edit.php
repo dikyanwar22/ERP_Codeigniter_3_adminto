@@ -11,11 +11,11 @@
       <div class="row g-3">
         <?php $isTop = ($modul->parent_id==0 && $modul->level==1); ?>
         <?php if($isTop): ?>
-          <div class="col-12">
+          <!-- <div class="col-12">
             <div class="alert alert-success py-2 small mb-0">
               <i class="ri-apps-2-line me-1"></i> Edit <strong>Modul</strong> Top Level (Level 1) — sudah pasti modul
             </div>
-          </div>
+          </div> -->
           <input type="hidden" name="parent_id" value="0">
           <input type="hidden" name="tipe_menu" value="<?= $modul->tipe ?>">
         <?php else: ?>

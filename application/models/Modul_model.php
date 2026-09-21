@@ -116,4 +116,78 @@ class Modul_model extends CI_Model {
         foreach ($rows as $r) $byParent[$r->parent_id][] = $r;
         return $this->build_tree(0, $byParent);
     }
+
+    // ===== OPTIMIZED: DataTables ServerSide via JSON =====
+    // Menggantikan N+1 query di view, 1 query dengan subquery child_count + limit/offset
+
+    public function get_datatables($parent_id, $start, $length, $search, $order_col, $order_dir) {
+        $this->db->select('m.*, (SELECT COUNT(*) FROM ci_modul c WHERE c.parent_id = m.id) AS child_count', false);
+        $this->db->from('ci_modul m');
+        $this->db->where('m.parent_id', (int)$parent_id);
+        if ($search !== '' && $search !== null) {
+            $this->db->group_start();
+            $this->db->like('m.nama_modul', $search);
+            $this->db->or_like('m.url', $search);
+            $this->db->or_like('m.icon', $search);
+            $this->db->or_like('m.tipe', $search);
+            $this->db->group_end();
+        }
+        // whitelist kolom order agar aman dari SQL injection
+        $allow_index = ['id','nama_modul','icon','url','tipe','urutan','status','level','id'];
+        // fallback jika tidak ada
+        if (!isset($allow_index[$order_col])) $order_col = 5;
+        $col = $allow_index[$order_col];
+        // khusus untuk index view (parent 0) level tidak dipakai, tapi tetap aman
+        $order_dir = ($order_dir === 'desc') ? 'DESC' : 'ASC';
+        $this->db->order_by('m.'.$col, $order_dir);
+        $this->db->order_by('m.id', 'ASC');
+        if ($length != -1) {
+            $this->db->limit((int)$length, (int)$start);
+        }
+        return $this->db->get()->result();
+    }
+
+    // varian untuk mapping kolom detail vs index
+    public function get_datatables_mapped($parent_id, $start, $length, $search, $order_col, $order_dir, $colMap) {
+        $this->db->select('m.*, (SELECT COUNT(*) FROM ci_modul c WHERE c.parent_id = m.id) AS child_count', false);
+        $this->db->from('ci_modul m');
+        $this->db->where('m.parent_id', (int)$parent_id);
+        if ($search !== '' && $search !== null) {
+            $this->db->group_start();
+            $this->db->like('m.nama_modul', $search);
+            $this->db->or_like('m.url', $search);
+            $this->db->or_like('m.icon', $search);
+            $this->db->or_like('m.tipe', $search);
+            $this->db->group_end();
+        }
+        $col = isset($colMap[$order_col]) ? $colMap[$order_col] : 'urutan';
+        // sanitasi kolom
+        $allowed = ['id','nama_modul','icon','url','tipe','urutan','status','level'];
+        if (!in_array($col, $allowed, true)) $col = 'urutan';
+        $order_dir = ($order_dir === 'desc') ? 'DESC' : 'ASC';
+        $this->db->order_by('m.'.$col, $order_dir);
+        $this->db->order_by('m.id', 'ASC');
+        if ($length != -1) {
+            $this->db->limit((int)$length, (int)$start);
+        }
+        return $this->db->get()->result();
+    }
+
+    public function count_all_modul($parent_id) {
+        return $this->db->where('parent_id', (int)$parent_id)->count_all_results('ci_modul');
+    }
+
+    public function count_filtered_modul($parent_id, $search) {
+        $this->db->from('ci_modul m');
+        $this->db->where('m.parent_id', (int)$parent_id);
+        if ($search !== '' && $search !== null) {
+            $this->db->group_start();
+            $this->db->like('m.nama_modul', $search);
+            $this->db->or_like('m.url', $search);
+            $this->db->or_like('m.icon', $search);
+            $this->db->or_like('m.tipe', $search);
+            $this->db->group_end();
+        }
+        return $this->db->count_all_results();
+    }
 }

@@ -11,61 +11,6 @@
     <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
 </head>
 <body>
-<?php
-$current = uri_string();
-if (empty($current)) $current = 'dashboard';
-
-// kumpulkan semua node dengan url untuk cari best match (longest prefix)
-$all_nodes = [];
-function collect_nodes($nodes, &$list) {
-    foreach ($nodes as $n) {
-        if (!empty($n->url)) $list[] = $n;
-        if (!empty($n->children)) collect_nodes($n->children, $list);
-    }
-}
-collect_nodes($menus ?? [], $all_nodes);
-$best_match = null; $best_len = -1;
-foreach ($all_nodes as $n) {
-    if ($current === $n->url || strpos($current.'/', $n->url.'/') === 0) {
-        $len = strlen($n->url);
-        if ($len > $best_len) { $best_len = $len; $best_match = $n; }
-    }
-}
-$best_id = $best_match ? $best_match->id : null;
-
-function is_ancestor_of($ancestor, $target_id) {
-    if ($ancestor->id == $target_id) return true;
-    if (empty($ancestor->children)) return false;
-    foreach ($ancestor->children as $c) {
-        if ($c->id == $target_id) return true;
-        if (is_ancestor_of($c, $target_id)) return true;
-    }
-    return false;
-}
-function render_submenu($children, $best_id) {
-    foreach ($children as $c) {
-        $hasChild = !empty($c->children);
-        $isActive = ($best_id !== null && $c->id == $best_id) || ($hasChild && $best_id !== null && is_ancestor_of($c, $best_id));
-        // untuk parent dropdown yang punya anak aktif, highlight parent juga
-        if ($hasChild) {
-            $activeClass = $isActive ? ' active' : '';
-            echo '<li class="dropdown-submenu">';
-            echo '<a class="dropdown-item'.$activeClass.'" href="#">';
-            echo '<i class="'.$c->icon.' me-2"></i> '.htmlspecialchars($c->nama_modul);
-            echo '<i class="ri-arrow-right-s-line ms-auto"></i>';
-            echo '</a>';
-            echo '<ul class="dropdown-menu">';
-            render_submenu($c->children, $best_id);
-            echo '</ul>';
-            echo '</li>';
-        } else {
-            $url = $c->url ? base_url($c->url) : '#';
-            $activeClass = ($best_id !== null && $c->id == $best_id) ? ' active' : '';
-            echo '<li><a class="dropdown-item'.$activeClass.'" href="'.$url.'"><i class="'.$c->icon.' me-2"></i> '.htmlspecialchars($c->nama_modul).'</a></li>';
-        }
-    }
-}
-?>
 <header class="top-header">
     <a href="<?= base_url('dashboard') ?>" class="logo-box">
         <i class="ri-dashboard-line"></i>
@@ -79,31 +24,7 @@ function render_submenu($children, $best_id) {
             <i class="bi bi-chevron-left"></i>
         </button>
         <nav class="topnav" id="topnav">
-            <?php if (!empty($menus)): ?>
-                <?php foreach ($menus as $m): ?>
-                    <?php $hasChild = !empty($m->children); ?>
-                    <?php $isActiveModul = ($best_id !== null && is_ancestor_of($m, $best_id)); ?>
-                    <?php if (!$hasChild): ?>
-                        <a href="<?= $m->url ? base_url($m->url) : '#' ?>" class="topnav-item <?= $isActiveModul ? 'active' : '' ?>">
-                            <i class="<?= $m->icon ?>"></i>
-                            <span><?= htmlspecialchars($m->nama_modul) ?></span>
-                        </a>
-                    <?php else: ?>
-                        <div class="topnav-item dropdown <?= $isActiveModul ? 'active' : '' ?>">
-                            <a href="#" class="dropdown-toggle <?= $isActiveModul ? 'active' : '' ?>" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">
-                                <i class="<?= $m->icon ?>"></i>
-                                <span><?= htmlspecialchars($m->nama_modul) ?></span>
-                                <i class="ri-arrow-down-s-line arrow"></i>
-                            </a>
-                            <ul class="dropdown-menu" data-bs-popper="static">
-                                <?php render_submenu($m->children, $best_id); ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <a href="<?= base_url('dashboard') ?>" class="topnav-item active"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
-            <?php endif; ?>
+            <!-- diisi via jQuery AJAX dari /api/menu -->
         </nav>
         <button class="scroll-btn scroll-right" id="scrollRight" aria-label="Scroll right">
             <i class="bi bi-chevron-right"></i>
@@ -129,16 +50,6 @@ function render_submenu($children, $best_id) {
                                 <small class="text-muted" style="font-size:11px;">2m lalu</small>
                             </div>
                             <p class="mb-0 small text-muted text-truncate">Apakah pesanan sudah dikirim?</p>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
-                        <img src="https://i.pravatar.cc/100?img=33" class="rounded-circle flex-shrink-0" width="40" height="40" alt="">
-                        <div class="flex-grow-1 overflow-hidden">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0 small fw-semibold">Putri Ayu</h6>
-                                <small class="text-muted" style="font-size:11px;">15m lalu</small>
-                            </div>
-                            <p class="mb-0 small text-muted text-truncate">Minta katalog produk terbaru</p>
                         </div>
                     </a>
                 </div>
@@ -191,42 +102,14 @@ function render_submenu($children, $best_id) {
     </div>
 </header>
 
-<!-- Mobile Drawer -->
+<!-- Mobile Drawer - diisi via jQuery -->
 <div class="mobile-drawer" id="mobileDrawer">
     <div class="drawer-header d-flex justify-content-between align-items-center p-3 border-bottom">
         <span class="fw-bold text-white"><i class="ri-dashboard-line me-2"></i>ADMINTO</span>
         <button class="btn btn-sm btn-outline-light" id="mobileDrawerClose"><i class="bi bi-x-lg"></i></button>
     </div>
-    <div class="drawer-body p-2">
-        <?php
-        // untuk drawer, gunakan best_id juga agar konsisten
-        function render_drawer2($menus, $best_id, $level=0) {
-            foreach ($menus as $m) {
-                $hasChild = !empty($m->children);
-                $isActive = ($best_id !== null && is_ancestor_of($m, $best_id));
-                if ($hasChild) {
-                    $id = 'm_'.$m->id;
-                    $activeClass = $isActive ? ' active' : '';
-                    echo '<div class="drawer-group">';
-                    echo '<a class="drawer-link'.$activeClass.'" data-bs-toggle="collapse" href="#'.$id.'"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).' <i class="ri-arrow-down-s-line ms-auto"></i></a>';
-                    echo '<div class="collapse'.($isActive?' show':'').'" id="'.$id.'">';
-                    render_drawer2($m->children, $best_id, $level+1);
-                    echo '</div></div>';
-                } else {
-                    $url = $m->url ? base_url($m->url) : '#';
-                    $isActiveItem = ($best_id !== null && $m->id == $best_id);
-                    $activeClass = $isActiveItem ? ' active' : '';
-                    if ($level==0) echo '<a href="'.$url.'" class="drawer-link'.$activeClass.'"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).'</a>';
-                    else echo '<a href="'.$url.'" class="drawer-sublink'.$activeClass.'">'.htmlspecialchars($m->nama_modul).'</a>';
-                }
-            }
-        }
-        if (!empty($menus)) render_drawer2($menus, $best_id);
-        ?>
-        <hr class="border-secondary my-2">
-        <?php $isProfileDrawer = (strpos($current,'profile')===0 || strpos($current,'akun')===0); ?>
-        <a href="<?= base_url('profile') ?>" class="drawer-link <?= $isProfileDrawer ? 'active' : '' ?>"><i class="ri-user-line me-2"></i> Profile</a>
-        <a href="<?= base_url('logout') ?>" class="drawer-link"><i class="ri-logout-box-line me-2"></i> Logout</a>
+    <div class="drawer-body p-2" id="drawerBody">
+        <!-- diisi via jQuery -->
     </div>
 </div>
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -245,3 +128,196 @@ function render_submenu($children, $best_id) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
+
+<!-- jQuery render menu full via API -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+var BASE_URL = "<?= base_url() ?>";
+var CURRENT_URL = "<?= uri_string() ?>";
+if (!CURRENT_URL) CURRENT_URL = "dashboard";
+function escHtmlMenu(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Render top menu via JSON agar tidak lelet (1x AJAX, bukan PHP loop per request)
+$(function(){
+  $.getJSON(BASE_URL + 'api/menu', function(menus){
+    if(!menus || !menus.length){
+      $('#topnav').html('<a href="'+BASE_URL+'dashboard" class="topnav-item active"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>');
+      return;
+    }
+    // cari best_match id (longest prefix url)
+    var all = [];
+    function collect(nodes){ nodes.forEach(function(n){ if(n.url) all.push(n); if(n.children) collect(n.children); }); }
+    collect(menus);
+    var best=null, bestLen=-1;
+    all.forEach(function(n){
+      if(CURRENT_URL===n.url || (CURRENT_URL+'/').indexOf(n.url+'/')===0){
+        if(n.url.length>bestLen){ bestLen=n.url.length; best=n; }
+      }
+    });
+    var bestId = best ? best.id : null;
+    function isAncestor(node, tid){
+      if(!node || !node.children) return false;
+      for(var i=0;i<node.children.length;i++){
+        var c=node.children[i];
+        if(c.id==tid) return true;
+        if(isAncestor(c, tid)) return true;
+      }
+      return false;
+    }
+    function isActive(node){
+      if(bestId===null) return false;
+      if(node.id==bestId) return true;
+      return isAncestor(node, bestId);
+    }
+    function renderSub(children){
+      var h='';
+      children.forEach(function(c){
+        var hasChild = c.children && c.children.length;
+        var active = isActive(c) || c.id==bestId;
+        if(hasChild){
+          h+='<li class="dropdown-submenu"><a class="dropdown-item'+(active?' active':'')+'" href="#"><i class="'+escHtmlMenu(c.icon)+' me-2"></i> '+escHtmlMenu(c.nama_modul)+' <i class="ri-arrow-right-s-line ms-auto"></i></a><ul class="dropdown-menu">';
+          h+=renderSub(c.children);
+          h+='</ul></li>';
+        } else {
+          var url = c.url ? BASE_URL + c.url : '#';
+          h+='<li><a class="dropdown-item'+(c.id==bestId?' active':'')+'" href="'+url+'"><i class="'+escHtmlMenu(c.icon)+' me-2"></i> '+escHtmlMenu(c.nama_modul)+'</a></li>';
+        }
+      });
+      return h;
+    }
+    var topHtml='';
+    menus.forEach(function(m){
+      var hasChild = m.children && m.children.length;
+      var activeModul = isActive(m);
+      if(!hasChild){
+        var url = m.url ? BASE_URL + m.url : '#';
+        topHtml+='<a href="'+url+'" class="topnav-item '+(activeModul?'active':'')+'"><i class="'+escHtmlMenu(m.icon)+'"></i><span>'+escHtmlMenu(m.nama_modul)+'</span></a>';
+      } else {
+        topHtml+='<div class="topnav-item dropdown '+(activeModul?'active':'')+'"><a href="#" class="dropdown-toggle '+(activeModul?'active':'')+'" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false"><i class="'+escHtmlMenu(m.icon)+'"></i><span>'+escHtmlMenu(m.nama_modul)+'</span><i class="ri-arrow-down-s-line arrow"></i></a><ul class="dropdown-menu" data-bs-popper="static">'+renderSub(m.children)+'</ul></div>';
+      }
+    });
+    $('#topnav').html(topHtml);
+    // render drawer
+    function renderDrawer(nodes, level){
+      var h='';
+      nodes.forEach(function(m){
+        var hasChild = m.children && m.children.length;
+        var active = isActive(m);
+        if(hasChild){
+          var id='m_'+m.id;
+          h+='<div class="drawer-group"><a class="drawer-link '+(active?'active':'')+'" data-bs-toggle="collapse" href="#'+id+'"><i class="'+escHtmlMenu(m.icon)+' me-2"></i> '+escHtmlMenu(m.nama_modul)+' <i class="ri-arrow-down-s-line ms-auto"></i></a><div class="collapse '+(active?'show':'')+'" id="'+id+'">';
+          h+=renderDrawer(m.children, level+1);
+          h+='</div></div>';
+        } else {
+          var url = m.url ? BASE_URL + m.url : '#';
+          var activeItem = (m.id==bestId);
+          if(level==0) h+='<a href="'+url+'" class="drawer-link '+(activeItem?'active':'')+'"><i class="'+escHtmlMenu(m.icon)+' me-2"></i> '+escHtmlMenu(m.nama_modul)+'</a>';
+          else h+='<a href="'+url+'" class="drawer-sublink '+(activeItem?'active':'')+'">'+escHtmlMenu(m.nama_modul)+'</a>';
+        }
+      });
+      return h;
+    }
+    var drawerHtml = renderDrawer(menus,0);
+    drawerHtml+='<hr class="border-secondary my-2">';
+    var isProfile = CURRENT_URL.indexOf('profile')===0 || CURRENT_URL.indexOf('akun')===0;
+    drawerHtml+='<a href="'+BASE_URL+'profile" class="drawer-link '+(isProfile?'active':'')+'"><i class="ri-user-line me-2"></i> Profile</a>';
+    drawerHtml+='<a href="'+BASE_URL+'logout" class="drawer-link"><i class="ri-logout-box-line me-2"></i> Logout</a>';
+    $('#drawerBody').html(drawerHtml);
+    // --- re-bind logic untuk topnav yang baru di-render via AJAX ---
+    (function(){
+      var topnav = document.getElementById('topnav');
+      var leftBtn = document.getElementById('scrollLeft');
+      var rightBtn = document.getElementById('scrollRight');
+      var headerActions = document.querySelector('.header-actions');
+      function updScroll(){
+        if(!topnav||!leftBtn||!rightBtn) return;
+        var canL = topnav.scrollLeft > 5;
+        var canR = topnav.scrollLeft + topnav.clientWidth < topnav.scrollWidth - 5;
+        leftBtn.classList.toggle('d-none', !canL);
+        rightBtn.classList.toggle('d-none', !canR);
+        if(topnav.scrollWidth <= topnav.clientWidth){ leftBtn.classList.add('d-none'); rightBtn.classList.add('d-none'); }
+      }
+      function scrollToActive(){
+        if(!topnav) return;
+        var active = topnav.querySelector('.topnav-item.active, .dropdown-item.active');
+        var target=null;
+        if(active){
+          if(active.classList.contains('dropdown-item')) target = active.closest('.topnav-item.dropdown');
+          else target = active;
+          if(target){ var left = target.offsetLeft - (topnav.clientWidth/2)+(target.clientWidth/2); topnav.scrollTo({left:left, behavior:'smooth'}); }
+        }
+      }
+      if(topnav){
+        topnav.addEventListener('scroll', updScroll);
+        window.addEventListener('resize', updScroll);
+        setTimeout(updScroll, 200); setTimeout(updScroll, 800); setTimeout(updScroll, 1500);
+        setTimeout(scrollToActive, 400);
+      }
+      if(leftBtn && topnav) leftBtn.addEventListener('click', function(){ topnav.scrollBy({left:-300, behavior:'smooth'}); });
+      if(rightBtn && topnav) rightBtn.addEventListener('click', function(){ topnav.scrollBy({left:300, behavior:'smooth'}); });
+      // dropdown fixed positioning
+      document.querySelectorAll('.topnav-item.dropdown').forEach(function(dd){
+        dd.addEventListener('show.bs.dropdown', function(){
+          var toggle = dd.querySelector('[data-bs-toggle="dropdown"]');
+          var menu = dd.querySelector('.dropdown-menu');
+          if(!toggle||!menu) return;
+          menu.classList.add('fixed-dropdown');
+          var rect = toggle.getBoundingClientRect();
+          menu.style.setProperty('top', (rect.bottom+6)+'px','important');
+          menu.style.setProperty('left', rect.left+'px','important');
+          menu.style.setProperty('right','auto','important');
+          menu.style.setProperty('transform','none','important');
+          requestAnimationFrame(function(){
+            var mRect = menu.getBoundingClientRect();
+            var hRect = headerActions ? headerActions.getBoundingClientRect():null;
+            var viewportRight = window.innerWidth-8;
+            if((hRect && mRect.right > hRect.left-8) || mRect.right > viewportRight){
+              var w=mRect.width; var newLeft=rect.right-w;
+              if(newLeft<8) newLeft=8;
+              if(hRect && newLeft+w > hRect.left-8) newLeft = hRect.left-w-12;
+              menu.style.setProperty('left', newLeft+'px','important');
+            }
+          });
+        });
+        dd.addEventListener('hide.bs.dropdown', function(){
+          var menu = dd.querySelector('.dropdown-menu');
+          if(menu) setTimeout(function(){ menu.classList.remove('fixed-dropdown'); menu.style.removeProperty('top'); menu.style.removeProperty('left'); menu.style.removeProperty('right'); menu.style.removeProperty('transform'); },200);
+          dd.querySelectorAll('.dropdown-submenu.show').forEach(function(s){ s.classList.remove('show'); });
+          dd.querySelectorAll('.dropdown-submenu.flip-left').forEach(function(s){ s.classList.remove('flip-left'); });
+        });
+      });
+      // submenu click toggle
+      document.querySelectorAll('.dropdown-submenu > .dropdown-item').forEach(function(item){
+        item.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          var parent=this.parentElement;
+          var isOpen=parent.classList.contains('show');
+          parent.parentElement.querySelectorAll(':scope > .dropdown-submenu.show').forEach(function(s){ if(s!==parent) s.classList.remove('show'); });
+          if(isOpen){ parent.classList.remove('show'); parent.querySelectorAll('.dropdown-submenu.show').forEach(function(c){ c.classList.remove('show'); }); }
+          else {
+            parent.classList.add('show');
+            var submenu=parent.querySelector(':scope > .dropdown-menu');
+            if(submenu){
+              submenu.style.visibility='hidden'; submenu.style.display='block';
+              var rect=submenu.getBoundingClientRect();
+              submenu.style.visibility=''; submenu.style.display='';
+              if(rect.right > window.innerWidth-10) parent.classList.add('flip-left'); else parent.classList.remove('flip-left');
+            }
+          }
+        });
+      });
+      // leaf close
+      document.querySelectorAll('.topnav-item.dropdown .dropdown-menu .dropdown-item').forEach(function(leaf){
+        if(leaf.parentElement.classList.contains('dropdown-submenu')) return;
+        leaf.addEventListener('click', function(){
+          var topDropdown=this.closest('.topnav-item.dropdown');
+          if(topDropdown){
+            var toggle=topDropdown.querySelector('[data-bs-toggle="dropdown"]');
+            if(toggle){ var inst=bootstrap.Dropdown.getInstance(toggle)||new bootstrap.Dropdown(toggle); setTimeout(function(){ inst.hide(); },100); }
+          }
+        });
+      });
+    })();
+    $(document).trigger('menu-loaded');
+  }).fail(function(){ $('#topnav').html('<a href="'+BASE_URL+'dashboard" class="topnav-item"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>'); });
+});
+</script>
