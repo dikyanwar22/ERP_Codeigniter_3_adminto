@@ -46,6 +46,13 @@ class Modul extends MY_Controller {
                     $this->session->set_flashdata('error','Menu Tunggal wajib isi URL (tidak punya dropdown)');
                     $this->render('modul/create',$data); return;
                 }
+                if (!empty($url)) {
+                    $exists = $this->db->get_where('ci_modul',['url'=>$url])->row();
+                    if ($exists) {
+                        $this->session->set_flashdata('error','URL sudah dipakai: '.htmlspecialchars($exists->nama_modul).' (ID '.$exists->id.') — harus unik');
+                        $this->render('modul/create',$data); return;
+                    }
+                }
                 $parent_id = (int)$this->input->post('parent_id');
                 $level = 1;
                 if ($parent_id != 0) {
@@ -98,6 +105,13 @@ class Modul extends MY_Controller {
                 if ($tipe == 'tunggal' && empty($url)) {
                     $this->session->set_flashdata('error','Menu Tunggal wajib isi URL');
                     $this->render('modul/edit',$data); return;
+                }
+                if (!empty($url)) {
+                    $exists = $this->db->where('url',$url)->where('id !=',$id)->get('ci_modul')->row();
+                    if ($exists) {
+                        $this->session->set_flashdata('error','URL sudah dipakai: '.htmlspecialchars($exists->nama_modul).' (ID '.$exists->id.') — harus unik');
+                        $this->render('modul/edit',$data); return;
+                    }
                 }
                 $parent_id = (int)$this->input->post('parent_id');
                 if ($parent_id == $id) {

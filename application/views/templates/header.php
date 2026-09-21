@@ -12,23 +12,56 @@
 </head>
 <body>
 <?php
-// helper untuk render submenu rekursif
-function render_submenu($children) {
+$current = uri_string();
+if (empty($current)) $current = 'dashboard';
+
+// kumpulkan semua node dengan url untuk cari best match (longest prefix)
+$all_nodes = [];
+function collect_nodes($nodes, &$list) {
+    foreach ($nodes as $n) {
+        if (!empty($n->url)) $list[] = $n;
+        if (!empty($n->children)) collect_nodes($n->children, $list);
+    }
+}
+collect_nodes($menus ?? [], $all_nodes);
+$best_match = null; $best_len = -1;
+foreach ($all_nodes as $n) {
+    if ($current === $n->url || strpos($current.'/', $n->url.'/') === 0) {
+        $len = strlen($n->url);
+        if ($len > $best_len) { $best_len = $len; $best_match = $n; }
+    }
+}
+$best_id = $best_match ? $best_match->id : null;
+
+function is_ancestor_of($ancestor, $target_id) {
+    if ($ancestor->id == $target_id) return true;
+    if (empty($ancestor->children)) return false;
+    foreach ($ancestor->children as $c) {
+        if ($c->id == $target_id) return true;
+        if (is_ancestor_of($c, $target_id)) return true;
+    }
+    return false;
+}
+function render_submenu($children, $best_id) {
     foreach ($children as $c) {
         $hasChild = !empty($c->children);
+        $isActive = ($best_id !== null && $c->id == $best_id) || ($hasChild && $best_id !== null && is_ancestor_of($c, $best_id));
+        // untuk parent dropdown yang punya anak aktif, highlight parent juga
         if ($hasChild) {
+            $activeClass = $isActive ? ' active' : '';
             echo '<li class="dropdown-submenu">';
-            echo '<a class="dropdown-item" href="#">';
+            echo '<a class="dropdown-item'.$activeClass.'" href="#">';
             echo '<i class="'.$c->icon.' me-2"></i> '.htmlspecialchars($c->nama_modul);
             echo '<i class="ri-arrow-right-s-line ms-auto"></i>';
             echo '</a>';
             echo '<ul class="dropdown-menu">';
-            render_submenu($c->children);
+            render_submenu($c->children, $best_id);
             echo '</ul>';
             echo '</li>';
         } else {
             $url = $c->url ? base_url($c->url) : '#';
-            echo '<li><a class="dropdown-item" href="'.$url.'"><i class="'.$c->icon.' me-2"></i> '.htmlspecialchars($c->nama_modul).'</a></li>';
+            $activeClass = ($best_id !== null && $c->id == $best_id) ? ' active' : '';
+            echo '<li><a class="dropdown-item'.$activeClass.'" href="'.$url.'"><i class="'.$c->icon.' me-2"></i> '.htmlspecialchars($c->nama_modul).'</a></li>';
         }
     }
 }
@@ -49,21 +82,21 @@ function render_submenu($children) {
             <?php if (!empty($menus)): ?>
                 <?php foreach ($menus as $m): ?>
                     <?php $hasChild = !empty($m->children); ?>
+                    <?php $isActiveModul = ($best_id !== null && is_ancestor_of($m, $best_id)); ?>
                     <?php if (!$hasChild): ?>
-                        <?php $active = (uri_string() == $m->url) ? 'active' : ''; ?>
-                        <a href="<?= $m->url ? base_url($m->url) : '#' ?>" class="topnav-item <?= $active ?>">
+                        <a href="<?= $m->url ? base_url($m->url) : '#' ?>" class="topnav-item <?= $isActiveModul ? 'active' : '' ?>">
                             <i class="<?= $m->icon ?>"></i>
                             <span><?= htmlspecialchars($m->nama_modul) ?></span>
                         </a>
                     <?php else: ?>
-                        <div class="topnav-item dropdown">
-                            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        <div class="topnav-item dropdown <?= $isActiveModul ? 'active' : '' ?>">
+                            <a href="#" class="dropdown-toggle <?= $isActiveModul ? 'active' : '' ?>" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 <i class="<?= $m->icon ?>"></i>
                                 <span><?= htmlspecialchars($m->nama_modul) ?></span>
                                 <i class="ri-arrow-down-s-line arrow"></i>
                             </a>
                             <ul class="dropdown-menu">
-                                <?php render_submenu($m->children); ?>
+                                <?php render_submenu($m->children, $best_id); ?>
                             </ul>
                         </div>
                     <?php endif; ?>
@@ -166,24 +199,29 @@ function render_submenu($children) {
     </div>
     <div class="drawer-body p-2">
         <?php
-        function render_drawer($menus, $level=0) {
+        // untuk drawer, gunakan best_id juga agar konsisten
+        function render_drawer2($menus, $best_id, $level=0) {
             foreach ($menus as $m) {
                 $hasChild = !empty($m->children);
+                $isActive = ($best_id !== null && is_ancestor_of($m, $best_id));
                 if ($hasChild) {
                     $id = 'm_'.$m->id;
+                    $activeClass = $isActive ? ' active' : '';
                     echo '<div class="drawer-group">';
-                    echo '<a class="drawer-link" data-bs-toggle="collapse" href="#'.$id.'"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).' <i class="ri-arrow-down-s-line ms-auto"></i></a>';
-                    echo '<div class="collapse" id="'.$id.'">';
-                    render_drawer($m->children, $level+1);
+                    echo '<a class="drawer-link'.$activeClass.'" data-bs-toggle="collapse" href="#'.$id.'"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).' <i class="ri-arrow-down-s-line ms-auto"></i></a>';
+                    echo '<div class="collapse'.($isActive?' show':'').'" id="'.$id.'">';
+                    render_drawer2($m->children, $best_id, $level+1);
                     echo '</div></div>';
                 } else {
                     $url = $m->url ? base_url($m->url) : '#';
-                    if ($level==0) echo '<a href="'.$url.'" class="drawer-link"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).'</a>';
-                    else echo '<a href="'.$url.'" class="drawer-sublink">'.htmlspecialchars($m->nama_modul).'</a>';
+                    $isActiveItem = ($best_id !== null && $m->id == $best_id);
+                    $activeClass = $isActiveItem ? ' active' : '';
+                    if ($level==0) echo '<a href="'.$url.'" class="drawer-link'.$activeClass.'"><i class="'.$m->icon.' me-2"></i> '.htmlspecialchars($m->nama_modul).'</a>';
+                    else echo '<a href="'.$url.'" class="drawer-sublink'.$activeClass.'">'.htmlspecialchars($m->nama_modul).'</a>';
                 }
             }
         }
-        if (!empty($menus)) render_drawer($menus);
+        if (!empty($menus)) render_drawer2($menus, $best_id);
         ?>
         <hr class="border-secondary my-2">
         <a href="<?= base_url('profile') ?>" class="drawer-link"><i class="ri-user-line me-2"></i> Profile</a>

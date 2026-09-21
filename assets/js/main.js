@@ -24,6 +24,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Auto-scroll ke modul aktif (kondisional mengikuti klik)
+    function scrollToActive() {
+        if (!topnav) return;
+        const active = topnav.querySelector('.topnav-item.active, .dropdown-item.active');
+        let target = null;
+        if (active) {
+            if (active.classList.contains('dropdown-item')) {
+                target = active.closest('.topnav-item.dropdown');
+            } else {
+                target = active;
+            }
+            if (target) {
+                const left = target.offsetLeft - (topnav.clientWidth / 2) + (target.clientWidth / 2);
+                topnav.scrollTo({ left: left, behavior: 'smooth' });
+            }
+        }
+    }
+
     if (topnav) {
         topnav.addEventListener('scroll', updateScrollButtons);
         window.addEventListener('resize', updateScrollButtons);
@@ -32,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(updateScrollButtons, 200);
         setTimeout(updateScrollButtons, 800);
         setTimeout(updateScrollButtons, 1500);
+        // scroll ke modul aktif saat load
+        setTimeout(scrollToActive, 400);
+        window.addEventListener('load', scrollToActive);
     }
 
     if (leftBtn) leftBtn.addEventListener('click', () => topnav.scrollBy({ left: -300, behavior: 'smooth' }));

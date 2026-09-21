@@ -163,6 +163,11 @@ body {
     background: #727cf5;
     box-shadow: 0 2px 6px rgba(114,124,245,0.4);
 }
+.topnav-item.dropdown.active > a {
+    color: #fff !important;
+    background: #727cf5 !important;
+    box-shadow: 0 2px 6px rgba(114,124,245,0.4);
+}
 
 /* Dropdown inside topnav */
 .topnav-item.dropdown {
@@ -227,6 +232,17 @@ body {
 .topnav-item .dropdown-item:hover {
     background: #f3f5f9;
     color: #727cf5;
+}
+.topnav-item .dropdown-item.active {
+    background: #727cf5 !important;
+    color: #fff !important;
+}
+.topnav-item .dropdown-item.active i {
+    color: #fff !important;
+}
+.dropdown-submenu > .dropdown-item.active {
+    background: #727cf5 !important;
+    color: #fff !important;
 }
 
 /* ===== Submenu inside dropdown (menu di dalam menu - 2 & 3 level) ===== */
