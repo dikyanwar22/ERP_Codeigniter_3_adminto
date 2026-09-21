@@ -19,18 +19,20 @@
           <input type="hidden" name="parent_id" value="0">
           <input type="hidden" name="tipe_menu" value="<?= $modul->tipe ?>">
         <?php else: ?>
-          <div class="col-md-6">
-            <label class="form-label small fw-semibold">Masuk ke dalam</label>
-            <select name="parent_id" class="form-select" required>
-              <option value="0" <?= $modul->parent_id==0?'selected':'' ?>>— Top Level (Menu Utama) —</option>
-              <?php foreach($parents as $pid=>$label): ?>
-                <?php if($pid==0) continue; ?>
-                <option value="<?= $pid ?>" <?= $modul->parent_id==$pid?'selected':'' ?>><?= htmlspecialchars($label) ?></option>
-              <?php endforeach; ?>
-            </select>
-            <small class="text-muted" style="font-size:11px;">Pilih induk. Top = menu utama.</small>
+          <?php $parentModul = $modul->parent_id ? $this->Modul_model->get_by_id($modul->parent_id) : null; ?>
+          <div class="col-12">
+            <div class="alert alert-primary py-2 small mb-0">
+              <i class="ri-information-line me-1"></i>
+              <?php if($parentModul): ?>
+                Berada di dalam <strong><i class="<?= $parentModul->icon ?> me-1"></i><?= htmlspecialchars($parentModul->nama_modul) ?></strong> (Level <?= $parentModul->level ?> → Level <?= $modul->level ?>)
+              <?php else: ?>
+                <strong>Top Level</strong> (Level 1)
+              <?php endif; ?>
+              — induk <strong>terkunci otomatis</strong> dari konteks klik sebelumnya, tidak perlu pilih lagi.
+            </div>
           </div>
-          <div class="col-md-6">
+          <input type="hidden" name="parent_id" value="<?= $modul->parent_id ?>">
+          <div class="col-12">
             <label class="form-label small fw-semibold">Tipe Menu (untuk menu ini)</label>
             <div class="d-flex gap-3 mt-1">
               <div class="form-check border rounded px-3 py-2 flex-grow-1">
