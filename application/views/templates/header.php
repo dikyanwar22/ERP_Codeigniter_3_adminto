@@ -90,12 +90,12 @@ function render_submenu($children, $best_id) {
                         </a>
                     <?php else: ?>
                         <div class="topnav-item dropdown <?= $isActiveModul ? 'active' : '' ?>">
-                            <a href="#" class="dropdown-toggle <?= $isActiveModul ? 'active' : '' ?>" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <a href="#" class="dropdown-toggle <?= $isActiveModul ? 'active' : '' ?>" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">
                                 <i class="<?= $m->icon ?>"></i>
                                 <span><?= htmlspecialchars($m->nama_modul) ?></span>
                                 <i class="ri-arrow-down-s-line arrow"></i>
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu" data-bs-popper="static">
                                 <?php render_submenu($m->children, $best_id); ?>
                             </ul>
                         </div>

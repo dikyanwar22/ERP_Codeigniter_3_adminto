@@ -94,15 +94,17 @@ body {
 .topnav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
 .topnav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
 
-/* When dropdown open, allow overflow to show menu - fixes "menu terhalang scroll" */
-.topnav.dropdown-open,
-.topnav-wrapper.dropdown-open,
-.top-header.dropdown-open {
-    overflow: visible !important;
-}
-.top-header.dropdown-open {
-    /* keep header above content but allow dropdown to overflow */
-    z-index: 1045;
+/* Dropdown topnav pakai fixed agar tidak ter-clip dan tidak menabrak icon */
+.topnav-item.dropdown .dropdown-menu.fixed-dropdown {
+    position: fixed !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 1060 !important;
+    margin-top: 0 !important;
 }
 
 /* Scroll buttons */

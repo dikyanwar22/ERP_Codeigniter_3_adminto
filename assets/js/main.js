@@ -88,39 +88,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { passive: false });
     }
 
-    // Fix: menu terhalang scroll - toggle overflow visible saat dropdown dibuka
-    const topHeader = document.querySelector('.top-header');
-    const topnavWrapper = document.querySelector('.topnav-wrapper');
+    // Fix: dropdown pakai fixed agar di bawah modul dan tidak menabrak icon
+    const headerActions = document.querySelector('.header-actions');
     document.querySelectorAll('.topnav-item.dropdown').forEach(dd => {
         dd.addEventListener('show.bs.dropdown', () => {
-            if (topnav) topnav.classList.add('dropdown-open');
-            if (topnavWrapper) topnavWrapper.classList.add('dropdown-open');
-            if (topHeader) topHeader.classList.add('dropdown-open');
-        });
-        // auto flip if would overflow viewport
-        dd.addEventListener('shown.bs.dropdown', () => {
+            const toggle = dd.querySelector('[data-bs-toggle="dropdown"]');
             const menu = dd.querySelector('.dropdown-menu');
-            if (!menu) return;
-            // reset
-            menu.style.left = '';
-            menu.style.right = '';
-            const rect = menu.getBoundingClientRect();
-            if (rect.right > window.innerWidth - 8) {
-                menu.style.left = 'auto';
-                menu.style.right = '0';
-                menu.style.transform = 'none';
-            }
+            if (!toggle || !menu) return;
+            menu.classList.add('fixed-dropdown');
+            const rect = toggle.getBoundingClientRect();
+            // pakai setProperty dengan !important agar override CSS absolute
+            menu.style.setProperty('top', (rect.bottom + 6) + 'px', 'important');
+            menu.style.setProperty('left', rect.left + 'px', 'important');
+            menu.style.setProperty('right', 'auto', 'important');
+            menu.style.setProperty('transform', 'none', 'important');
+            requestAnimationFrame(() => {
+                const mRect = menu.getBoundingClientRect();
+                const hRect = headerActions ? headerActions.getBoundingClientRect() : null;
+                const viewportRight = window.innerWidth - 8;
+                if ((hRect && mRect.right > hRect.left - 8) || mRect.right > viewportRight) {
+                    const menuWidth = mRect.width;
+                    let newLeft = rect.right - menuWidth;
+                    if (newLeft < 8) newLeft = 8;
+                    if (hRect && newLeft + menuWidth > hRect.left - 8) {
+                        newLeft = hRect.left - menuWidth - 12;
+                    }
+                    menu.style.setProperty('left', newLeft + 'px', 'important');
+                    menu.style.setProperty('right', 'auto', 'important');
+                }
+            });
         });
         dd.addEventListener('hide.bs.dropdown', () => {
-            // delay to allow bootstrap hide animation
-            setTimeout(() => {
-                const anyOpen = document.querySelector('.topnav-item.dropdown .dropdown-menu.show');
-                if (!anyOpen) {
-                    if (topnav) topnav.classList.remove('dropdown-open');
-                    if (topnavWrapper) topnavWrapper.classList.remove('dropdown-open');
-                    if (topHeader) topHeader.classList.remove('dropdown-open');
-                }
-            }, 10);
+            const menu = dd.querySelector('.dropdown-menu');
+            if (menu) {
+                setTimeout(() => {
+                    menu.classList.remove('fixed-dropdown');
+                    menu.style.removeProperty('top');
+                    menu.style.removeProperty('left');
+                    menu.style.removeProperty('right');
+                    menu.style.removeProperty('transform');
+                }, 200);
+            }
         });
     });
     // ===== Submenu (menu di dalam menu) - 2 & 3 level - FIX klik langsung hilang =====
@@ -156,13 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            // keep parent dropdown open (prevent Bootstrap auto-close)
-            const topDropdown = parent.closest('.topnav-item.dropdown');
-            if (topDropdown) {
-                if (topnav) topnav.classList.add('dropdown-open');
-                if (topnavWrapper) topnavWrapper.classList.add('dropdown-open');
-                if (topHeader) topHeader.classList.add('dropdown-open');
-            }
+            // keep parent dropdown open (prevent Bootstrap auto-close) - fixed positioning sudah handle, tidak perlu overflow
         });
     });
     // leaf item (menu tanpa submenu) -> tutup parent dropdown setelah diklik
@@ -191,22 +193,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // click outside closes submenus
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.dropdown-submenu')) {
-            // hanya tutup submenu, jangan tutup parent dropdown (biar parent tetap open sampai leaf diklik)
             const insideDropdown = e.target.closest('.topnav-item.dropdown');
             if (!insideDropdown) {
                 document.querySelectorAll('.dropdown-submenu.show').forEach(s => s.classList.remove('show'));
-            } else {
-                // klik di dalam dropdown tapi bukan di submenu -> tutup sibling submenus
-                // biarkan yang diklik tetap, jadi tidak tutup semua
             }
         }
         if (!e.target.closest('.topnav-item.dropdown')) {
-            const anyOpen = document.querySelector('.topnav-item.dropdown .dropdown-menu.show');
-            if (!anyOpen) {
-                if (topnav) topnav.classList.remove('dropdown-open');
-                if (topnavWrapper) topnavWrapper.classList.remove('dropdown-open');
-                if (topHeader) topHeader.classList.remove('dropdown-open');
-            }
             document.querySelectorAll('.dropdown-submenu.show').forEach(s => s.classList.remove('show'));
         }
     });
