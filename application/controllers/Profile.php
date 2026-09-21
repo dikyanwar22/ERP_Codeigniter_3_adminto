@@ -29,10 +29,6 @@ class Profile extends MY_Controller {
                     ];
                     $pass = $this->input->post('password', true);
                     if ($pass) {
-                        if (strlen($pass) < 6) {
-                            $this->session->set_flashdata('error','Password minimal 6 karakter');
-                            $this->render('profile/index',$data); return;
-                        }
                         $upd['password'] = password_hash($pass, PASSWORD_BCRYPT);
                     }
                     $this->User_model->update($id,$upd);

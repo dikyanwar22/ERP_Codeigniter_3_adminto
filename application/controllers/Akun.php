@@ -26,7 +26,7 @@ class Akun extends MY_Controller {
             $this->form_validation->set_rules('nama','Nama','required|trim');
             $this->form_validation->set_rules('jabatan_id','Jabatan','required|integer');
             $this->form_validation->set_rules('status','Status','required|in_list[0,1]');
-            $this->form_validation->set_rules('password','Password','required|min_length[6]');
+            $this->form_validation->set_rules('password','Password','required');
             $this->form_validation->set_rules('passconf','Konfirmasi Password','required|matches[password]');
             if ($this->form_validation->run() === TRUE) {
                 $nik = $this->input->post('nik', true);
@@ -66,7 +66,7 @@ class Akun extends MY_Controller {
             $this->form_validation->set_rules('email','Email','required|valid_email');
             $this->form_validation->set_rules('nama','Nama','required');
             $this->form_validation->set_rules('jabatan_id','Jabatan','required');
-            $this->form_validation->set_rules('password','Password','required|min_length[6]');
+            $this->form_validation->set_rules('password','Password','required');
             $this->form_validation->set_rules('passconf','Konfirmasi','required|matches[password]');
             if ($this->form_validation->run() === TRUE) {
                 $nik = $this->input->post('nik', true);
