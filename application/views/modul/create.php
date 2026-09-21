@@ -17,39 +17,34 @@
             </div>
           </div>
           <input type="hidden" name="parent_id" value="<?= $preset_parent ?>">
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Tipe Menu (untuk menu ini) <span class="text-danger">*</span></label>
+            <div class="d-flex gap-3">
+              <div class="form-check border rounded px-3 py-2 flex-grow-1" style="cursor:pointer;">
+                <input class="form-check-input" type="radio" name="tipe_menu" id="tipeTunggal" value="tunggal" checked>
+                <label class="form-check-label small w-100" for="tipeTunggal" style="cursor:pointer;">
+                  <i class="ri-layout-line me-1 text-success"></i> <strong>Menu Tunggal</strong>
+                  <small class="text-muted d-block" style="font-size:11px;">Tidak punya dropdown</small>
+                </label>
+              </div>
+              <div class="form-check border rounded px-3 py-2 flex-grow-1" style="cursor:pointer;">
+                <input class="form-check-input" type="radio" name="tipe_menu" id="tipeDropdown" value="dropdown">
+                <label class="form-check-label small w-100" for="tipeDropdown" style="cursor:pointer;">
+                  <i class="ri-list-radio me-1 text-primary"></i> <strong>Menu Dropdown</strong>
+                  <small class="text-muted d-block" style="font-size:11px;">Punya dropdown</small>
+                </label>
+              </div>
+            </div>
+          </div>
         <?php else: ?>
-          <div class="col-md-6">
-            <label class="form-label small fw-semibold">Masuk ke dalam <span class="text-danger">*</span></label>
-            <select name="parent_id" class="form-select" required>
-              <option value="0">— Top Level (Menu Utama) —</option>
-              <?php foreach($parents as $pid=>$label): ?>
-                <?php if($pid==0) continue; ?>
-                <option value="<?= $pid ?>"><?= htmlspecialchars($label) ?></option>
-              <?php endforeach; ?>
-            </select>
-            <small class="text-muted" style="font-size:11px;">Pilih induk. Top = menu utama di bar atas.</small>
+          <div class="col-12">
+            <div class="alert alert-success py-2 small mb-0">
+              <i class="ri-apps-2-line me-1"></i> Menambah <strong>Modul</strong> Top Level (Level 1) — sudah pasti modul
+            </div>
           </div>
+          <input type="hidden" name="parent_id" value="0">
+          <input type="hidden" name="tipe_menu" value="tunggal">
         <?php endif; ?>
-
-        <div class="col-md-<?= $isPreset ? '12' : '6' ?>">
-          <label class="form-label small fw-semibold">Tipe Menu (untuk menu ini sendiri) <span class="text-danger">*</span></label>
-          <div class="d-flex gap-3">
-            <div class="form-check border rounded px-3 py-2 flex-grow-1" style="cursor:pointer;">
-              <input class="form-check-input" type="radio" name="tipe_menu" id="tipeTunggal" value="tunggal" checked>
-              <label class="form-check-label small w-100" for="tipeTunggal" style="cursor:pointer;">
-                <i class="ri-layout-line me-1 text-success"></i> <strong>Menu Tunggal</strong>
-                <small class="text-muted d-block" style="font-size:11px;">Tidak punya dropdown, langsung link</small>
-              </label>
-            </div>
-            <div class="form-check border rounded px-3 py-2 flex-grow-1" style="cursor:pointer;">
-              <input class="form-check-input" type="radio" name="tipe_menu" id="tipeDropdown" value="dropdown">
-              <label class="form-check-label small w-100" for="tipeDropdown" style="cursor:pointer;">
-                <i class="ri-list-radio me-1 text-primary"></i> <strong>Menu Dropdown</strong>
-                <small class="text-muted d-block" style="font-size:11px;">Punya dropdown (ada menu di dalamnya)</small>
-              </label>
-            </div>
-          </div>
-        </div>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold">Nama Menu</label>

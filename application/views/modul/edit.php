@@ -9,37 +9,48 @@
     <?php $isDropdown = $has_children ? true : false; ?>
     <form method="post" id="formEdit">
       <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label small fw-semibold">Masuk ke dalam</label>
-          <select name="parent_id" class="form-select" required>
-            <option value="0" <?= $modul->parent_id==0?'selected':'' ?>>— Top Level (Menu Utama) —</option>
-            <?php foreach($parents as $pid=>$label): ?>
-              <?php if($pid==0) continue; ?>
-              <option value="<?= $pid ?>" <?= $modul->parent_id==$pid?'selected':'' ?>><?= htmlspecialchars($label) ?></option>
-            <?php endforeach; ?>
-          </select>
-          <small class="text-muted" style="font-size:11px;">Pilih induk. Top = menu utama.</small>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label small fw-semibold">Tipe Menu (untuk menu ini sendiri)</label>
-          <div class="d-flex gap-3 mt-1">
-            <div class="form-check border rounded px-3 py-2 flex-grow-1">
-              <input class="form-check-input" type="radio" name="tipe_menu" id="tipeTunggalEdit" value="tunggal" <?= !$isDropdown ? 'checked' : '' ?>>
-              <label class="form-check-label small w-100" for="tipeTunggalEdit" style="cursor:pointer;">
-                <i class="ri-layout-line me-1 text-success"></i> <strong>Menu Tunggal</strong>
-                <small class="d-block text-muted" style="font-size:11px;">Tidak punya dropdown</small>
-              </label>
-            </div>
-            <div class="form-check border rounded px-3 py-2 flex-grow-1">
-              <input class="form-check-input" type="radio" name="tipe_menu" id="tipeDropdownEdit" value="dropdown" <?= $isDropdown ? 'checked' : '' ?>>
-              <label class="form-check-label small w-100" for="tipeDropdownEdit" style="cursor:pointer;">
-                <i class="ri-list-radio me-1 text-primary"></i> <strong>Menu Dropdown</strong>
-                <small class="d-block text-muted" style="font-size:11px;">Punya dropdown (ada isi)</small>
-              </label>
+        <?php $isTop = ($modul->parent_id==0 && $modul->level==1); ?>
+        <?php if($isTop): ?>
+          <div class="col-12">
+            <div class="alert alert-success py-2 small mb-0">
+              <i class="ri-apps-2-line me-1"></i> Edit <strong>Modul</strong> Top Level (Level 1) — sudah pasti modul
             </div>
           </div>
-          <?php if($isDropdown): ?><small class="text-warning" style="font-size:11px;"><i class="ri-information-line me-1"></i>Menu ini sekarang punya <?= $this->Modul_model->count_children($modul->id) ?> sub menu — jika diubah ke Tunggal, sub menu tetap ada tapi induk jadi leaf.</small><?php endif; ?>
-        </div>
+          <input type="hidden" name="parent_id" value="0">
+          <input type="hidden" name="tipe_menu" value="<?= $modul->tipe ?>">
+        <?php else: ?>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Masuk ke dalam</label>
+            <select name="parent_id" class="form-select" required>
+              <option value="0" <?= $modul->parent_id==0?'selected':'' ?>>— Top Level (Menu Utama) —</option>
+              <?php foreach($parents as $pid=>$label): ?>
+                <?php if($pid==0) continue; ?>
+                <option value="<?= $pid ?>" <?= $modul->parent_id==$pid?'selected':'' ?>><?= htmlspecialchars($label) ?></option>
+              <?php endforeach; ?>
+            </select>
+            <small class="text-muted" style="font-size:11px;">Pilih induk. Top = menu utama.</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Tipe Menu (untuk menu ini)</label>
+            <div class="d-flex gap-3 mt-1">
+              <div class="form-check border rounded px-3 py-2 flex-grow-1">
+                <input class="form-check-input" type="radio" name="tipe_menu" id="tipeTunggalEdit" value="tunggal" <?= !$isDropdown ? 'checked' : '' ?>>
+                <label class="form-check-label small w-100" for="tipeTunggalEdit" style="cursor:pointer;">
+                  <i class="ri-layout-line me-1 text-success"></i> <strong>Menu Tunggal</strong>
+                  <small class="d-block text-muted" style="font-size:11px;">Tidak punya dropdown</small>
+                </label>
+              </div>
+              <div class="form-check border rounded px-3 py-2 flex-grow-1">
+                <input class="form-check-input" type="radio" name="tipe_menu" id="tipeDropdownEdit" value="dropdown" <?= $isDropdown ? 'checked' : '' ?>>
+                <label class="form-check-label small w-100" for="tipeDropdownEdit" style="cursor:pointer;">
+                  <i class="ri-list-radio me-1 text-primary"></i> <strong>Menu Dropdown</strong>
+                  <small class="d-block text-muted" style="font-size:11px;">Punya dropdown</small>
+                </label>
+              </div>
+            </div>
+            <?php if($isDropdown): ?><small class="text-warning" style="font-size:11px;"><i class="ri-information-line me-1"></i>Menu ini punya <?= $this->Modul_model->count_children($modul->id) ?> sub menu.</small><?php endif; ?>
+          </div>
+        <?php endif; ?>
 
         <div class="col-md-6">
           <label class="form-label small fw-semibold">Nama Menu</label>
