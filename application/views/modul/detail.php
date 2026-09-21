@@ -74,10 +74,6 @@
             <td>
               <?php if($c->tipe == 'dropdown' && $c->level < 4): ?>
                 <a href="<?= base_url('modul/detail/'.$c->id) ?>" class="btn btn-sm <?= $c->child_count ? 'btn-info' : 'btn-outline-info' ?>"><i class="ri-eye-line me-1"></i> Detail <?= $c->child_count ? '('.$c->child_count.')' : '' ?></a>
-              <?php elseif($c->tipe == 'tunggal'): ?>
-                <span class="btn btn-sm btn-light border disabled" title="Menu Tunggal tidak punya dropdown"><i class="ri-eye-off-line me-1"></i> Detail</span>
-              <?php else: ?>
-                <span class="btn btn-sm btn-light border disabled" title="Level 4 maksimal"><i class="ri-eye-off-line me-1"></i> Detail</span>
               <?php endif; ?>
               <a href="<?= base_url('modul/edit/'.$c->id) ?>" class="btn btn-sm btn-light border"><i class="ri-edit-line"></i></a>
               <a href="<?= base_url('modul/toggle/'.$c->id.'?from=modul/detail/'.$modul->id) ?>" class="btn btn-sm <?= $c->status? 'btn-warning':'btn-success' ?>"><i class="ri-eye-<?= $c->status? 'off':'on' ?>-line"></i></a>

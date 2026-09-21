@@ -45,8 +45,6 @@
             <td>
               <?php if($m->tipe=='dropdown'): ?>
                 <a href="<?= base_url('modul/detail/'.$m->id) ?>" class="btn btn-sm <?= $hasChild ? 'btn-info' : 'btn-outline-info' ?>"><i class="ri-eye-line me-1"></i> Detail <?= $hasChild ? '('.$cnt.')' : '' ?></a>
-              <?php else: ?>
-                <span class="btn btn-sm btn-light border disabled" title="Menu Tunggal tidak punya dropdown"><i class="ri-eye-off-line me-1"></i> Detail</span>
               <?php endif; ?>
               <a href="<?= base_url('modul/edit/'.$m->id) ?>" class="btn btn-sm btn-light border"><i class="ri-edit-line"></i></a>
               <a href="<?= base_url('modul/toggle/'.$m->id.'?from=modul') ?>" class="btn btn-sm <?= $m->status? 'btn-warning':'btn-success' ?>" title="Toggle hide/show">
