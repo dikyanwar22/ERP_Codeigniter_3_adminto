@@ -224,7 +224,8 @@ function render_submenu($children, $best_id) {
         if (!empty($menus)) render_drawer2($menus, $best_id);
         ?>
         <hr class="border-secondary my-2">
-        <a href="<?= base_url('profile') ?>" class="drawer-link"><i class="ri-user-line me-2"></i> Profile</a>
+        <?php $isProfileDrawer = (strpos($current,'profile')===0 || strpos($current,'akun')===0); ?>
+        <a href="<?= base_url('profile') ?>" class="drawer-link <?= $isProfileDrawer ? 'active' : '' ?>"><i class="ri-user-line me-2"></i> Profile</a>
         <a href="<?= base_url('logout') ?>" class="drawer-link"><i class="ri-logout-box-line me-2"></i> Logout</a>
     </div>
 </div>

@@ -405,6 +405,7 @@ body {
     font-size: 13px;
 }
 .drawer-sublink:hover { color: #fff; }
+.drawer-sublink.active { background: #727cf5; color: #fff !important; border-radius: 4px; }
 
 /* Responsive - Mobile: hilangkan scroll horizontal, full responsive */
 @media (max-width: 991.98px) {
@@ -551,6 +552,20 @@ body {
 }
 .mobile-bottom-bar .fab-item:active .fab-circle {
     transform: scale(0.95);
+}
+.mobile-bottom-bar .bottom-item.active {
+    color: #727cf5;
+}
+.mobile-bottom-bar .bottom-item.active i {
+    color: #727cf5;
+}
+.mobile-bottom-bar .fab-item.active span {
+    color: #727cf5;
+    font-weight: 700;
+}
+.mobile-bottom-bar .fab-circle.active {
+    background: #727cf5;
+    box-shadow: 0 6px 16px rgba(114,124,245,0.5), 0 2px 6px rgba(0,0,0,0.15);
 }
 /* hide footer di mobile, beri padding bawah agar konten tidak tertutup bottom bar */
 @media (max-width: 991.98px) {
