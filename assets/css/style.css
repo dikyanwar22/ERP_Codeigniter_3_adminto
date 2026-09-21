@@ -341,13 +341,41 @@ body {
    Menu scroll handles overflow.
 */
 
-/* Main content */
+/* Main content - flex column agar footer sticky di bawah (laptop) */
 .main-content {
     padding: 0 12px;
-    min-height: calc(100vh - 70px);
+    min-height: calc(100vh - var(--adminto-top-header-height));
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 .main-content .container-fluid {
     max-width: 1600px;
+    flex: 1;
+    width: 100%;
+}
+/* Footer laptop: putih, full width edge-to-edge, ada jarak dengan konten */
+.footer {
+    background: #fff !important;
+    width: calc(100% + 24px) !important;
+    max-width: none !important;
+    margin: 0 -12px 0 -12px !important;
+    margin-top: auto !important;
+    border-top: 1px solid #e9ecef !important;
+    padding: 14px 12px !important;
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.04);
+}
+@media (min-width: 992px) {
+    .footer {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1020;
+    }
+    .main-content {
+        padding-bottom: 0 !important;
+    }
 }
 
 /* Cards */

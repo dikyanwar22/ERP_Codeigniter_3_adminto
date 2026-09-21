@@ -1,7 +1,7 @@
-        <footer class="footer mt-4 py-3 border-top text-center text-muted small d-none d-lg-block">
-            2026 © Adminto - CodeIgniter 3 • Port 3307 • Crafted with <i class="bi bi-heart-fill text-danger"></i>
-        </footer>
     </div>
+    <footer class="footer d-none d-lg-flex align-items-center justify-content-center text-muted small">
+        <span>2026 © Adminto - CodeIgniter 3 • Port 3307 • Crafted with <i class="bi bi-heart-fill text-danger mx-1"></i> ERP System</span>
+    </footer>
 </div>
 
 <?php
