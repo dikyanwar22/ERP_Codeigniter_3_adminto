@@ -1,0 +1,37 @@
+        <footer class="footer mt-4 py-3 border-top text-center text-muted small d-none d-lg-block">
+            2026 © Adminto - CodeIgniter 3 • Port 3307 • Crafted with <i class="bi bi-heart-fill text-danger"></i>
+        </footer>
+    </div>
+</div>
+
+<!-- Mobile Bottom Bar -->
+<nav class="mobile-bottom-bar d-lg-none" aria-label="Mobile bottom navigation">
+    <a href="javascript:history.back()" class="bottom-item">
+        <i class="ri-arrow-left-line"></i>
+        <span>BACK</span>
+    </a>
+    <a href="#" class="bottom-item" onclick="location.reload();return false;">
+        <i class="ri-refresh-line"></i>
+        <span>REFRESH</span>
+    </a>
+    <a href="<?= base_url('dashboard') ?>" class="bottom-item fab-item">
+        <div class="fab-circle">
+            <i class="ri-home-5-fill"></i>
+        </div>
+        <span>HOME</span>
+    </a>
+    <a href="<?= base_url('profile') ?>" class="bottom-item">
+        <i class="ri-user-3-line"></i>
+        <span>PROFILE</span>
+    </a>
+    <a href="<?= base_url('logout') ?>" class="bottom-item">
+        <i class="ri-logout-box-r-line"></i>
+        <span>LOGOUT</span>
+    </a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="<?= base_url('assets/js/main.js') ?>"></script>
+</body>
+</html>
