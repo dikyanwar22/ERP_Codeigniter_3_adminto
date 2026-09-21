@@ -19,6 +19,7 @@
     <button class="btn btn-dark d-lg-none ms-2" id="mobileMenuToggle">
         <i class="bi bi-list fs-4"></i>
     </button>
+    <span class="erp-system-mobile d-flex d-lg-none align-items-center ms-2 me-auto">ERP System</span>
     <div class="topnav-wrapper flex-grow-1 mx-3">
         <button class="scroll-btn scroll-left d-none" id="scrollLeft" aria-label="Scroll left">
             <i class="bi bi-chevron-left"></i>

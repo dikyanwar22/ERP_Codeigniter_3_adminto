@@ -435,8 +435,24 @@ body {
 .drawer-sublink:hover { color: #fff; }
 .drawer-sublink.active { background: #727cf5; color: #fff !important; border-radius: 4px; }
 
-/* Responsive - Mobile: hilangkan scroll horizontal, full responsive */
+/* ERP System label - hanya mobile: di kanan burger, berjarak */
+.erp-system-mobile {
+    display: none !important;
+}
 @media (max-width: 991.98px) {
+    .erp-system-mobile {
+        display: inline-flex !important;
+        align-items: center;
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        color: #fff;
+        white-space: nowrap;
+        line-height: 1;
+        flex-shrink: 0;
+        /* jarak aman: 8px dari burger (ms-2) dan dorong header-actions via me-auto */
+        padding-right: 8px;
+    }
     html, body {
         width: 100% !important;
         max-width: 100vw !important;
