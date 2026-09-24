@@ -1,0 +1,2 @@
+berikut ini cara menjalankan codeigniter 3 di terminal :
+php -S localhost:8000 -t .
