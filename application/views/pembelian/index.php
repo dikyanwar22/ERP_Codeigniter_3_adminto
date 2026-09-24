@@ -1,9 +1,29 @@
-<div class="d-flex justify-content-between align-items-center py-3">
+<div class="d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
   <div>
     <h4 class="fw-bold mb-1"><i class="ri-shopping-bag-3-line me-2 text-primary"></i>Pembelian - Purchase Order</h4>
-    <small class="text-muted">Contoh modul terintegrasi • Hanya jabatan dengan akses & status Show bisa akses (MY_Controller)</small>
+    <small class="text-muted">Modul terintegrasi • CI3 Library Excel/PDF • Hanya jabatan dengan akses & status Show (MY_Controller)</small>
   </div>
-  <a href="<?= base_url('pembelian/create') ?>" class="btn btn-primary btn-sm"><i class="ri-add-line me-1"></i> Buat PO</a>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="<?= base_url('pembelian/template') ?>" class="btn btn-outline-success btn-sm"><i class="ri-download-2-line me-1"></i> Template</a>
+    <a href="<?= base_url('pembelian/export') ?>" class="btn btn-success btn-sm"><i class="ri-file-excel-line me-1"></i> Export Excel</a>
+    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#importModal"><i class="ri-upload-2-line me-1"></i> Import Excel</button>
+    <a href="<?= base_url('pembelian/create') ?>" class="btn btn-primary btn-sm"><i class="ri-add-line me-1"></i> Buat PO</a>
+  </div>
+</div>
+
+<!-- Modal Import -->
+<div class="modal fade" id="importModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" action="<?= base_url('pembelian/import') ?>" enctype="multipart/form-data" class="modal-content">
+      <div class="modal-header"><h6 class="modal-title fw-bold"><i class="ri-upload-2-line me-2"></i>Import dari Excel</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="alert alert-info small py-2"><i class="ri-information-line me-1"></i> Download <a href="<?= base_url('pembelian/template') ?>" class="fw-bold">Template</a> dulu. Isi baris 4 dst, jangan ubah header. Kode PO kosong = auto-generate.</div>
+        <label class="form-label small fw-semibold">File Excel (.xlsx/.xls)</label>
+        <input type="file" name="file" accept=".xlsx,.xls" class="form-control" required>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-warning btn-sm"><i class="ri-upload-line me-1"></i> Import</button></div>
+    </form>
+  </div>
 </div>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
@@ -21,7 +41,7 @@
             <th>Total</th>
             <th>Status</th>
             <th>Pembuat</th>
-            <th width="180">Aksi</th>
+            <th width="240">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -39,9 +59,11 @@
             </td>
             <td><small><?= htmlspecialchars($p->pembuat) ?></small></td>
             <td>
-              <a href="<?= base_url('pembelian/detail/'.$p->id) ?>" class="btn btn-sm btn-info"><i class="ri-eye-line"></i></a>
-              <a href="<?= base_url('pembelian/edit/'.$p->id) ?>" class="btn btn-sm btn-light border"><i class="ri-edit-line"></i></a>
-              <a href="<?= base_url('pembelian/delete/'.$p->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus PO <?= $p->kode_po ?>?')"><i class="ri-delete-bin-line"></i></a>
+              <a href="<?= base_url('pembelian/detail/'.$p->id) ?>" class="btn btn-sm btn-info" title="Detail"><i class="ri-eye-line"></i></a>
+              <a href="<?= base_url('pembelian/edit/'.$p->id) ?>" class="btn btn-sm btn-light border" title="Edit"><i class="ri-edit-line"></i></a>
+              <a href="<?= base_url('pembelian/pdf/'.$p->id) ?>" class="btn btn-sm btn-danger" title="Export PDF"><i class="ri-file-pdf-line"></i></a>
+              <a href="<?= base_url('pembelian/pdf_view/'.$p->id) ?>" target="_blank" class="btn btn-sm btn-outline-danger" title="View PDF"><i class="ri-eye-2-line"></i></a>
+              <a href="<?= base_url('pembelian/delete/'.$p->id) ?>" class="btn btn-sm btn-dark" onclick="return confirm('Hapus PO <?= $p->kode_po ?>?')" title="Hapus"><i class="ri-delete-bin-line"></i></a>
             </td>
           </tr>
           <?php endforeach; ?>

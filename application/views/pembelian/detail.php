@@ -21,8 +21,10 @@
         <div class="alert alert-info small">
           <strong>Contoh integrasi:</strong> Controller <code>Pembelian.php:1</code> extends <code>MY_Controller</code> → otomatis cek login, cek <code>status Show</code> & <code>ci_akses</code> jabatan <strong><?= htmlspecialchars($this->session->userdata('user')['jabatan_nama']) ?></strong>. Jika modul di-hide atau akses dicabut → 403.
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <a href="<?= base_url('pembelian/edit/'.$p->id) ?>" class="btn btn-primary btn-sm"><i class="ri-edit-line me-1"></i> Edit</a>
+          <a href="<?= base_url('pembelian/pdf/'.$p->id) ?>" class="btn btn-danger btn-sm"><i class="ri-file-pdf-line me-1"></i> Export PDF</a>
+          <a href="<?= base_url('pembelian/pdf_view/'.$p->id) ?>" target="_blank" class="btn btn-outline-danger btn-sm"><i class="ri-eye-line me-1"></i> View PDF</a>
           <a href="<?= base_url('pembelian') ?>" class="btn btn-light border btn-sm">Kembali</a>
         </div>
       </div>
