@@ -45,28 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php foreach($pembelian as $p): ?>
-          <tr>
-            <td><a href="<?= base_url('pembelian/detail/'.$p->id) ?>" class="fw-semibold text-primary"><?= htmlspecialchars($p->kode_po) ?></a></td>
-            <td><?= htmlspecialchars($p->supplier) ?></td>
-            <td><?= date('d/m/Y', strtotime($p->tanggal)) ?></td>
-            <td class="text-end">Rp <?= number_format($p->total,0,',','.') ?></td>
-            <td>
-              <?php if($p->status=='draft'): ?><span class="badge bg-secondary">Draft</span>
-              <?php elseif($p->status=='proses'): ?><span class="badge bg-warning-subtle text-warning">Proses</span>
-              <?php elseif($p->status=='selesai'): ?><span class="badge bg-success-subtle text-success">Selesai</span>
-              <?php else: ?><span class="badge bg-danger-subtle text-danger">Batal</span><?php endif; ?>
-            </td>
-            <td><small><?= htmlspecialchars($p->pembuat) ?></small></td>
-            <td>
-              <a href="<?= base_url('pembelian/detail/'.$p->id) ?>" class="btn btn-sm btn-info" title="Detail"><i class="ri-eye-line"></i></a>
-              <a href="<?= base_url('pembelian/edit/'.$p->id) ?>" class="btn btn-sm btn-light border" title="Edit"><i class="ri-edit-line"></i></a>
-              <a href="<?= base_url('pembelian/pdf/'.$p->id) ?>" class="btn btn-sm btn-danger" title="Export PDF"><i class="ri-file-pdf-line"></i></a>
-              <a href="<?= base_url('pembelian/pdf_view/'.$p->id) ?>" target="_blank" class="btn btn-sm btn-outline-danger" title="View PDF"><i class="ri-eye-2-line"></i></a>
-              <a href="<?= base_url('pembelian/delete/'.$p->id) ?>" class="btn btn-sm btn-dark" onclick="return confirm('Hapus PO <?= $p->kode_po ?>?')" title="Hapus"><i class="ri-delete-bin-line"></i></a>
-            </td>
-          </tr>
-          <?php endforeach; ?>
+          <!-- data di-load via AJAX endpoint pembelian/data (server-side) -->
         </tbody>
       </table>
     </div>
@@ -77,10 +56,32 @@
   <strong>Cara pakai:</strong> Menu ini muncul karena modul <code>Pembelian</code> (id 4, status Show) dan jabatan <strong><?= htmlspecialchars($user['jabatan_nama']) ?></strong> punya akses di <a href="<?= base_url('akses') ?>">Kelola Akses</a>. Jika modul di-hide atau akses dicabut, menu hilang & URL <code>/pembelian</code> akan 403 (dicek di <code>MY_Controller</code>).
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script>
-$(function(){ $('#dtPembelian').DataTable({ responsive:true, language:{url:'https://cdn.datatables.net/plug-ins/1.13.8/i18n/id.json'}, order:[[2,'desc']] }); });
+// DataTables server-side via endpoint - tidak load PHP loop (cepat, seperti topnav api/menu)
+$(function(){
+  $('#dtPembelian').DataTable({
+    processing: true,
+    serverSide: true,
+    responsive: true,
+    ajax: {
+      url: '<?= base_url("pembelian/data") ?>',
+      type: 'GET',
+      dataType: 'json'
+    },
+    columns: [
+      { data: 0 },
+      { data: 1 },
+      { data: 2 },
+      { data: 3, className: 'text-end' },
+      { data: 4 },
+      { data: 5 },
+      { data: 6, orderable: false, searchable: false }
+    ],
+    order: [[2,'desc']],
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/id.json' }
+  });
+});
 </script>

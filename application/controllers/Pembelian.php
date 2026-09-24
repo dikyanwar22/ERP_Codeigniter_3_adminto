@@ -11,11 +11,94 @@ class Pembelian extends MY_Controller {
         $this->load->library('Pdf');
     }
 
-    // DataTables: daftar PO
+    // Halaman daftar PO - render view saja, data via endpoint AJAX (tidak lelet)
     public function index() {
         $data['title'] = 'Pembelian - Purchase Order';
-        $data['pembelian'] = $this->Pembelian_model->get_all();
         $this->render('pembelian/index', $data);
+    }
+
+    // Endpoint JSON untuk DataTables server-side (dipanggil via AJAX di pembelian/index.php)
+    public function data() {
+        // DataTables params
+        $draw = (int)$this->input->get('draw');
+        $start = (int)$this->input->get('start');
+        $length = (int)$this->input->get('length');
+        if ($length === 0) $length = 10;
+        $search = $this->input->get('search');
+        $searchVal = is_array($search) ? ($search['value'] ?? '') : ($this->input->get('search[value]') ?? '');
+        $order = $this->input->get('order');
+        $orderCol = 2; $orderDir = 'desc';
+        if (is_array($order) && isset($order[0]['column'])) {
+            $orderCol = (int)$order[0]['column'];
+            $orderDir = strtolower($order[0]['dir']) === 'asc' ? 'asc' : 'desc';
+        } else {
+            // fallback via flat keys
+            $oc = $this->input->get('order[0][column]');
+            $od = $this->input->get('order[0][dir]');
+            if ($oc !== null) $orderCol = (int)$oc;
+            if ($od !== null) $orderDir = strtolower($od)==='asc'?'asc':'desc';
+        }
+
+        $columns = ['p.kode_po','p.supplier','p.tanggal','p.total','p.status','u.nama', null];
+        $orderBy = $columns[$orderCol] ?? 'p.tanggal';
+        if ($orderBy === null) $orderBy = 'p.created_at';
+
+        // total tanpa filter
+        $total = $this->db->count_all('ci_pembelian');
+
+        // base query filtered
+        $this->db->from('ci_pembelian p');
+        $this->db->join('ci_users u','u.id=p.created_by','left');
+        if ($searchVal !== '' && $searchVal !== null) {
+            $this->db->group_start();
+            $this->db->like('p.kode_po', $searchVal);
+            $this->db->or_like('p.supplier', $searchVal);
+            $this->db->or_like('p.tanggal', $searchVal);
+            $this->db->or_like('p.status', $searchVal);
+            $this->db->or_like('u.nama', $searchVal);
+            $this->db->or_like('p.keterangan', $searchVal);
+            $this->db->group_end();
+        }
+        // count filtered
+        $filtered = $this->db->count_all_results('', false);
+
+        // ambil data paginated + order
+        $this->db->select('p.*, u.nama as pembuat');
+        $this->db->order_by($orderBy, $orderDir);
+        // secondary order jika orderBy bukan tanggal -> tetap order tanggal desc sebagai penentuan stabil
+        if ($orderBy !== 'p.tanggal' && $orderBy !== 'p.created_at') {
+            $this->db->order_by('p.tanggal','desc');
+        }
+        $this->db->limit($length, $start);
+        $rows = $this->db->get()->result();
+
+        $data = [];
+        foreach ($rows as $p) {
+            $kode = '<a href="'.base_url('pembelian/detail/'.$p->id).'" class="fw-semibold text-primary">'.htmlspecialchars($p->kode_po).'</a>';
+            $supplier = htmlspecialchars($p->supplier);
+            $tanggal = date('d/m/Y', strtotime($p->tanggal));
+            $totalFmt = 'Rp '.number_format($p->total,0,',','.');
+            if ($p->status=='draft') $badge='<span class="badge bg-secondary">Draft</span>';
+            elseif ($p->status=='proses') $badge='<span class="badge bg-warning-subtle text-warning border">Proses</span>';
+            elseif ($p->status=='selesai') $badge='<span class="badge bg-success-subtle text-success border">Selesai</span>';
+            else $badge='<span class="badge bg-danger-subtle text-danger border">Batal</span>';
+            $pembuat = '<small>'.htmlspecialchars($p->pembuat ?? '-').'</small>';
+            $aksi = '<a href="'.base_url('pembelian/detail/'.$p->id).'" class="btn btn-sm btn-info" title="Detail"><i class="ri-eye-line"></i></a> '
+                  . '<a href="'.base_url('pembelian/edit/'.$p->id).'" class="btn btn-sm btn-light border" title="Edit"><i class="ri-edit-line"></i></a> '
+                  . '<a href="'.base_url('pembelian/pdf/'.$p->id).'" class="btn btn-sm btn-danger" title="Export PDF"><i class="ri-file-pdf-line"></i></a> '
+                  . '<a href="'.base_url('pembelian/pdf_view/'.$p->id).'" target="_blank" class="btn btn-sm btn-outline-danger" title="View PDF"><i class="ri-eye-2-line"></i></a> '
+                  . '<a href="'.base_url('pembelian/delete/'.$p->id).'" class="btn btn-sm btn-dark" onclick="return confirm(\'Hapus PO '.htmlspecialchars($p->kode_po,ENT_QUOTES).'?\')" title="Hapus"><i class="ri-delete-bin-line"></i></a>';
+            $data[] = [$kode,$supplier,$tanggal,$totalFmt,$badge,$pembuat,$aksi];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'draw'=>$draw,
+                'recordsTotal'=>$total,
+                'recordsFiltered'=>$filtered,
+                'data'=>$data
+            ]));
     }
 
     // Detail PO
