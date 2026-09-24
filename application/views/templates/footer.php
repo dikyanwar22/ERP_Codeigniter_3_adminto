@@ -29,14 +29,39 @@ $isProfile = (strpos($cur,'profile')===0 || strpos($cur,'akun')===0);
         <i class="ri-user-3-line"></i>
         <span>PROFILE</span>
     </a>
-    <a href="<?= base_url('logout') ?>" class="bottom-item">
+    <a href="<?= base_url('logout') ?>" class="bottom-item logout-btn">
         <i class="ri-logout-box-r-line"></i>
         <span>LOGOUT</span>
     </a>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="<?= base_url('assets/js/main.js') ?>"></script>
+<script>
+// Konfirmasi logout dengan SweetAlert2
+document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.logout-btn');
+    if (!btn) return;
+    e.preventDefault();
+    var href = btn.getAttribute('href');
+    Swal.fire({
+        title: 'Yakin ingin logout?',
+        text: 'Anda akan keluar dari sistem.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#fa5c7c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Logout',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then(function(result) {
+        if (result.isConfirmed) {
+            window.location.href = href;
+        }
+    });
+});
+</script>
 </body>
 </html>

@@ -97,7 +97,7 @@
                 <li><a class="dropdown-item" href="<?= base_url('modul') ?>"><i class="ri-apps-2-line me-2"></i>Kelola Modul</a></li>
                 <li><a class="dropdown-item" href="<?= base_url('akses') ?>"><i class="ri-shield-keyhole-line me-2"></i>Akses</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="<?= base_url('logout') ?>"><i class="ri-logout-box-line me-2"></i>Logout</a></li>
+                <li><a class="dropdown-item logout-btn" href="<?= base_url('logout') ?>"><i class="ri-logout-box-line me-2"></i>Logout</a></li>
             </ul>
         </div>
     </div>
@@ -221,7 +221,7 @@ $(function(){
     drawerHtml+='<hr class="border-secondary my-2">';
     var isProfile = CURRENT_URL.indexOf('profile')===0 || CURRENT_URL.indexOf('akun')===0;
     drawerHtml+='<a href="'+BASE_URL+'profile" class="drawer-link '+(isProfile?'active':'')+'"><i class="ri-user-line me-2"></i> Profile</a>';
-    drawerHtml+='<a href="'+BASE_URL+'logout" class="drawer-link"><i class="ri-logout-box-line me-2"></i> Logout</a>';
+    drawerHtml+='<a href="'+BASE_URL+'logout" class="drawer-link logout-btn"><i class="ri-logout-box-line me-2"></i> Logout</a>';
     $('#drawerBody').html(drawerHtml);
     // --- re-bind logic untuk topnav yang baru di-render via AJAX ---
     (function(){
