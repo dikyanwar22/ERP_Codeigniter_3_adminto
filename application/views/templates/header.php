@@ -35,53 +35,37 @@
         <div class="dropdown">
             <button class="btn btn-dark position-relative btn-sm" data-bs-toggle="dropdown" aria-expanded="false" title="Pesan">
                 <i class="ri-message-3-line"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" style="font-size:9px;">3</span>
+                <span id="msgCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" style="font-size:9px;">0</span>
             </button>
             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" style="width:340px; margin-top:10px;">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
                     <h6 class="mb-0 fw-bold"><i class="ri-message-3-line me-2 text-primary"></i>Pesan</h6>
-                    <span class="badge bg-success">3 baru</span>
+                    <span id="msgCountHeader" class="badge bg-success">0 baru</span>
                 </div>
-                <div class="list-group list-group-flush" style="max-height:320px; overflow-y:auto;">
-                    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
-                        <img src="https://i.pravatar.cc/100?img=15" class="rounded-circle flex-shrink-0" width="40" height="40" alt="">
-                        <div class="flex-grow-1 overflow-hidden">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0 small fw-semibold">Budi Santoso</h6>
-                                <small class="text-muted" style="font-size:11px;">2m lalu</small>
-                            </div>
-                            <p class="mb-0 small text-muted text-truncate">Apakah pesanan sudah dikirim?</p>
-                        </div>
-                    </a>
+                <div id="messageList" class="list-group list-group-flush" style="max-height:320px; overflow-y:auto;">
+                    <!-- diisi via jQuery dummy -->
                 </div>
                 <div class="p-2 border-top text-center">
-                    <a href="#" class="btn btn-sm btn-primary w-100">Lihat Semua Pesan</a>
+                    <a href="#" class="btn btn-sm btn-primary w-100" id="btnLihatPesan">Lihat Semua Pesan</a>
                 </div>
             </div>
         </div>
         <div class="dropdown">
             <button class="btn btn-dark position-relative btn-sm me-1" data-bs-toggle="dropdown" aria-expanded="false" title="Notifikasi">
                 <i class="ri-notification-3-line"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;">4</span>
+                <span id="notifCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;">0</span>
             </button>
             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" style="width:360px; margin-top:10px;">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
                     <h6 class="mb-0 fw-bold"><i class="ri-notification-3-line me-2 text-danger"></i>Notifikasi</h6>
-                    <a href="#" class="small text-primary text-decoration-none">Tandai dibaca</a>
+                    <a href="#" id="btnTandaiBaca" class="small text-primary text-decoration-none">Tandai dibaca</a>
                 </div>
-                <div class="list-group list-group-flush" style="max-height:360px; overflow-y:auto;">
-                    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
-                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:40px; height:40px;"><i class="ri-shopping-cart-line"></i></div>
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1 small fw-semibold">Pesanan baru masuk</h6>
-                            <p class="mb-1 small text-muted">#ADM-0142 - $2,499</p>
-                            <small class="text-muted" style="font-size:11px;">5 menit lalu</small>
-                        </div>
-                    </a>
+                <div id="notificationList" class="list-group list-group-flush" style="max-height:360px; overflow-y:auto;">
+                    <!-- diisi via jQuery dummy -->
                 </div>
                 <div class="p-2 border-top d-flex gap-2">
                     <a href="#" class="btn btn-sm btn-light flex-grow-1">Pengaturan</a>
-                    <a href="#" class="btn btn-sm btn-primary flex-grow-1">Lihat Semua</a>
+                    <a href="#" class="btn btn-sm btn-primary flex-grow-1" id="btnLihatNotif">Lihat Semua</a>
                 </div>
             </div>
         </div>
@@ -320,5 +304,99 @@ $(function(){
     })();
     $(document).trigger('menu-loaded');
   }).fail(function(){ $('#topnav').html('<a href="'+BASE_URL+'dashboard" class="topnav-item"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>'); });
+});
+
+// === DUMMY PESAN & NOTIFIKASI via Controller (tanpa database) - render via jQuery ===
+$(function(){
+  var dummyMessages = [];
+  var dummyNotifications = [];
+
+  function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderMessages(){
+    var $list = $('#messageList');
+    if(!$list.length) return;
+    if(!dummyMessages.length){
+      $list.html('<div class="text-center text-muted small py-4">Tidak ada pesan</div>');
+    } else {
+      var html = '';
+      dummyMessages.forEach(function(m){
+        html += '<a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3 '+(m.unread?'':'opacity-75')+'">'
+          + '<img src="'+escHtml(m.avatar)+'" class="rounded-circle flex-shrink-0" width="40" height="40" alt="">'
+          + '<div class="flex-grow-1 overflow-hidden">'
+          + '<div class="d-flex justify-content-between align-items-center">'
+          + '<h6 class="mb-0 small fw-semibold">'+escHtml(m.nama)+(m.unread?' <span class="badge bg-success ms-1" style="font-size:9px;">baru</span>':'')+'</h6>'
+          + '<small class="text-muted" style="font-size:11px;">'+escHtml(m.waktu)+'</small>'
+          + '</div>'
+          + '<p class="mb-0 small text-muted text-truncate">'+escHtml(m.pesan)+'</p>'
+          + '</div></a>';
+      });
+      $list.html(html);
+    }
+    var unread = dummyMessages.filter(function(x){return x.unread;}).length;
+    $('#msgCountBadge').text(unread).toggle(unread>0);
+    $('#msgCountHeader').text(unread>0 ? unread+' baru' : '0 baru').toggleClass('bg-success', unread>0).toggleClass('bg-secondary', unread===0);
+  }
+
+  function renderNotifications(){
+    var $list = $('#notificationList');
+    if(!$list.length) return;
+    if(!dummyNotifications.length){
+      $list.html('<div class="text-center text-muted small py-4">Tidak ada notifikasi</div>');
+    } else {
+      var html = '';
+      dummyNotifications.forEach(function(n){
+        html += '<a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3 '+(n.unread?'':'opacity-75')+'">'
+          + '<div class="bg-'+escHtml(n.bg)+' bg-opacity-10 text-'+escHtml(n.bg)+' rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:40px;height:40px;"><i class="'+escHtml(n.icon)+'"></i></div>'
+          + '<div class="flex-grow-1">'
+          + '<h6 class="mb-1 small fw-semibold">'+escHtml(n.judul)+(n.unread?' <span class="badge bg-danger ms-1" style="font-size:9px;"></span>':'')+'</h6>'
+          + '<p class="mb-1 small text-muted">'+escHtml(n.deskripsi)+'</p>'
+          + '<small class="text-muted" style="font-size:11px;">'+escHtml(n.waktu)+'</small>'
+          + '</div></a>';
+      });
+      $list.html(html);
+    }
+    var unread = dummyNotifications.filter(function(x){return x.unread;}).length;
+    $('#notifCountBadge').text(unread).toggle(unread>0);
+    $('#notifCountHeader').parent().find('h6').html('<i class="ri-notification-3-line me-2 text-danger"></i>Notifikasi'+(unread>0?' <span class="badge bg-danger ms-2" style="font-size:10px;">'+unread+' baru</span>':''));
+  }
+
+  // Ambil data dummy dari Controller via jQuery AJAX
+  function loadMessages(){
+    $.getJSON(BASE_URL + 'notif/messages')
+      .done(function(data){ dummyMessages = data || []; renderMessages(); })
+      .fail(function(){
+        // fallback jika endpoint api yang dipakai
+        $.getJSON(BASE_URL + 'api/messages')
+          .done(function(data){ dummyMessages = data || []; renderMessages(); })
+          .fail(function(){ $('#messageList').html('<div class="text-center text-muted small py-4">Gagal memuat pesan</div>'); });
+      });
+  }
+  function loadNotifications(){
+    $.getJSON(BASE_URL + 'notif/notifications')
+      .done(function(data){ dummyNotifications = data || []; renderNotifications(); })
+      .fail(function(){
+        $.getJSON(BASE_URL + 'api/notifications')
+          .done(function(data){ dummyNotifications = data || []; renderNotifications(); })
+          .fail(function(){ $('#notificationList').html('<div class="text-center text-muted small py-4">Gagal memuat notifikasi</div>'); });
+      });
+  }
+
+  loadMessages();
+  loadNotifications();
+
+  // Tandai semua notifikasi dibaca (hanya di memori dummy, tanpa DB)
+  $(document).on('click', '#btnTandaiBaca', function(e){
+    e.preventDefault();
+    dummyNotifications.forEach(function(n){ n.unread=false; });
+    renderNotifications();
+    if(window.Swal) Swal.fire({icon:'success', title:'Ditandai dibaca', text:'Semua notifikasi ditandai sudah dibaca.', timer:1500, showConfirmButton:false});
+  });
+  // Lihat semua - demo SweetAlert
+  $(document).on('click', '#btnLihatPesan, #btnLihatNotif', function(e){
+    e.preventDefault();
+    var isPesan = $(this).attr('id')==='btnLihatPesan';
+    if(window.Swal) Swal.fire({icon:'info', title: isPesan ? 'Pesan (Dummy)' : 'Notifikasi (Dummy)', html: isPesan ? 'Menampilkan <b>'+dummyMessages.length+'</b> pesan dummy dari <code>Notif::messages()</code>.<br><small class="text-muted">Data dummy via Controller + jQuery, tanpa database.</small>' : 'Menampilkan <b>'+dummyNotifications.length+'</b> notifikasi dummy dari <code>Notif::notifications()</code>.<br><small class="text-muted">Data dummy via Controller + jQuery, tanpa database.</small>', confirmButtonText:'Tutup'});
+  });
 });
 </script>

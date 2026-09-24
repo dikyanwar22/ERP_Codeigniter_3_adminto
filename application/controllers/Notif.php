@@ -1,22 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Api extends MY_Controller {
+/**
+ * Controller Dummy untuk Pesan & Notifikasi
+ * Data dummy berada di controller (tanpa database)
+ * Diakses via jQuery: /notif/messages dan /notif/notifications
+ */
+class Notif extends MY_Controller {
     public function __construct() {
         parent::__construct();
-        // MY_Controller sudah cek login & load Modul_model
     }
 
-    // GET /api/menu -> JSON menu top untuk jabatan login (hanya status Show)
-    public function menu() {
-        $menus = $this->Modul_model->get_menu_for_jabatan($this->jabatan_id);
-        // header JSON
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($menus));
-    }
-
-    // GET /api/messages -> JSON dummy pesan (tanpa DB)
+    // GET /notif/messages -> JSON dummy pesan
     public function messages() {
         $data = [
             ['id'=>1, 'nama'=>'Budi Santoso', 'avatar'=>'https://i.pravatar.cc/100?img=15', 'waktu'=>'2m lalu', 'pesan'=>'Apakah pesanan sudah dikirim?', 'unread'=>true],
@@ -25,10 +20,12 @@ class Api extends MY_Controller {
             ['id'=>4, 'nama'=>'Dewi Lestari', 'avatar'=>'https://i.pravatar.cc/100?img=26', 'waktu'=>'3 jam lalu', 'pesan'=>'Meeting jam 14.00 jangan lupa!', 'unread'=>false],
             ['id'=>5, 'nama'=>'Rudi Hartono', 'avatar'=>'https://i.pravatar.cc/100?img=12', 'waktu'=>'kemarin', 'pesan'=>'Revisi invoice #INV-9921', 'unread'=>false],
         ];
-        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($data));
     }
 
-    // GET /api/notifications -> JSON dummy notifikasi (tanpa DB)
+    // GET /notif/notifications -> JSON dummy notifikasi
     public function notifications() {
         $data = [
             ['id'=>1, 'judul'=>'Pesanan baru masuk', 'deskripsi'=>'#ADM-0142 - $2,499', 'waktu'=>'5 menit lalu', 'icon'=>'ri-shopping-cart-line', 'bg'=>'success', 'unread'=>true],
@@ -38,6 +35,8 @@ class Api extends MY_Controller {
             ['id'=>5, 'judul'=>'Backup berhasil', 'deskripsi'=>'Backup harian 24 Sep 2026 selesai', 'waktu'=>'kemarin', 'icon'=>'ri-hard-drive-3-line', 'bg'=>'secondary', 'unread'=>false],
             ['id'=>6, 'judul'=>'Approval dibutuhkan', 'deskripsi'=>'PO #PO-2026-009 menunggu persetujuan', 'waktu'=>'kemarin', 'icon'=>'ri-file-list-3-line', 'bg'=>'danger', 'unread'=>false],
         ];
-        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($data));
     }
 }
