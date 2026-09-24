@@ -59,6 +59,24 @@ $route['logout'] = 'auth/logout';
 $route['daftar-akun'] = 'akun/create';
 $route['profile'] = 'profile/index';
 
+// API - Menu & Dummy (kompatibel header lama)
+$route['api/menu'] = 'api/menu/index';
+$route['api/messages'] = 'notif/messages';
+$route['api/notifications'] = 'notif/notifications';
+
+// API JWT - Auth
+$route['api/auth/login'] = 'api/auth/login';
+$route['api/auth/me'] = 'api/auth/me';
+
+// API JWT - Pembelian CRUD (tabel ci_pembelian) - controller di folder Api
+$route['api/pembelian'] = 'api/pembelian/index';
+$route['api/pembelian/(:num)'] = 'api/pembelian/index/$1';
+$route['api/pembelian/show/(:num)'] = 'api/pembelian/show/$1';
+$route['api/pembelian/store'] = 'api/pembelian/store';
+$route['api/pembelian/update/(:num)'] = 'api/pembelian/update/$1';
+$route['api/pembelian/delete/(:num)'] = 'api/pembelian/destroy/$1';
+$route['api/pembelian/create'] = 'api/pembelian/store';
+
 // Modul & Akses
 $route['modul'] = 'modul/index';
 $route['akses'] = 'akses/index';
