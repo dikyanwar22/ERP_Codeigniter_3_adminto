@@ -80,8 +80,8 @@
         </div>
       </div>
       <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-primary">Update</button>
-        <a href="<?= base_url('modul') ?>" class="btn btn-light border">Batal</a>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-edit"></i> Update</button>
+        <a href="<?= base_url('modul') ?>" class="btn btn-light border"><i class="fa fa-close"></i> Batal</a>
       </div>
     </form>
   </div>

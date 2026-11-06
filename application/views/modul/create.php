@@ -110,8 +110,8 @@
         </div>
       </div>
       <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-primary">Simpan</button>
-        <a href="<?= $isPreset ? base_url('modul/detail/'.$preset_parent) : base_url('modul') ?>" class="btn btn-light border">Batal</a>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+        <a href="<?= $isPreset ? base_url('modul/detail/'.$preset_parent) : base_url('modul') ?>" class="btn btn-light border"><i class="fa fa-close"></i> Batal</a>
       </div>
     </form>
   </div>
