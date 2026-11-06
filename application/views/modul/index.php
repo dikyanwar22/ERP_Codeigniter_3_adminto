@@ -83,7 +83,7 @@ $(function(){
           }
           html += '<a href="'+BASE_URL+'modul/edit/'+row.id+'" class="btn btn-sm btn-light border me-1"><i class="ri-edit-line"></i></a>';
           var toggleCls = row.status ? 'btn-warning' : 'btn-success';
-          var toggleIcon = row.status ? 'ri-eye-off-line' : 'ri-eye-on-line';
+          var toggleIcon = row.status ? 'ri-eye-off-line' : 'ri-eye-line';
           html += '<a href="'+BASE_URL+'modul/toggle/'+row.id+'?from=modul" class="btn btn-sm '+toggleCls+' me-1" title="Toggle hide/show"><i class="'+toggleIcon+'"></i></a>';
           html += '<a href="'+BASE_URL+'modul/delete/'+row.id+'" class="btn btn-sm btn-danger" onclick="return confirm(\'Hapus modul '+escHtml(row.nama_modul).replace(/\'/g,"\\'")+'?\')"><i class="ri-delete-bin-line"></i></a>';
           return html;
