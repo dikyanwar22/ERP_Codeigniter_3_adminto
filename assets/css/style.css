@@ -581,18 +581,18 @@ body {
 .mobile-bottom-bar .fab-circle {
     width: 56px;
     height: 56px;
-    background: #727cf5;
+    background: #f1f3f5;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 16px rgba(114,124,245,0.45), 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08);
     border: 4px solid #fff;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .mobile-bottom-bar .fab-circle i {
     font-size: 24px;
-    color: #fff;
+    color: #727cf5;
 }
 .mobile-bottom-bar .fab-item:active .fab-circle {
     transform: scale(0.95);
@@ -608,8 +608,12 @@ body {
     font-weight: 700;
 }
 .mobile-bottom-bar .fab-circle.active {
-    background: #727cf5;
-    box-shadow: 0 6px 16px rgba(114,124,245,0.5), 0 2px 6px rgba(0,0,0,0.15);
+    background: #e9ecef;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.08);
+}
+.mobile-bottom-bar .fab-item .fab-circle i,
+.mobile-bottom-bar .fab-item.active .fab-circle i {
+    color: #727cf5;
 }
 /* hide footer di mobile, beri padding bawah agar konten tidak tertutup bottom bar */
 @media (max-width: 991.98px) {

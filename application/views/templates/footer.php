@@ -21,9 +21,8 @@ $isProfile = (strpos($cur,'profile')===0 || strpos($cur,'akun')===0);
     </a>
     <a href="<?= base_url('dashboard') ?>" class="bottom-item fab-item <?= $isHome ? 'active' : '' ?>">
         <div class="fab-circle <?= $isHome ? 'active' : '' ?>">
-            <i class="ri-home-5-fill"></i>
+            <i class="fa-solid fa-house"></i>
         </div>
-        <span>HOME</span>
     </a>
     <a href="<?= base_url('profile') ?>" class="bottom-item <?= $isProfile ? 'active' : '' ?>">
         <i class="ri-user-3-line"></i>
