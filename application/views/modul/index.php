@@ -3,7 +3,10 @@
     <h4 class="fw-bold mb-1">Kelola Modul</h4>
     <small class="text-muted">Semua modul (level 1) via JSON + jQuery • ServerSide - tidak lelet</small>
   </div>
-  <a href="<?= base_url('modul/create') ?>" class="btn btn-primary btn-sm"><i class="ri-add-line me-1"></i> Tambah Modul</a>
+  <div class="d-flex align-items-center">
+    <a href="<?= base_url('modul/create') ?>" class="btn btn-primary btn-sm"><i class="ri-add-line"></i> Tambah Modul</a>
+    <a href="https://www.w3schools.com/icons/icons_reference.asp" target="_blank" class="btn btn-outline-secondary btn-sm ms-2"><i class="ri-font-size me-1"></i>Font</a>
+  </div>
 </div>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
