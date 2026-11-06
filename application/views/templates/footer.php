@@ -1,6 +1,6 @@
     </div>
     <footer class="footer d-none d-lg-flex align-items-center justify-content-center text-muted small">
-        <span>2026 © Adminto - CodeIgniter 3 • Port 3307 • Crafted with <i class="bi bi-heart-fill text-danger mx-1"></i> ERP System</span>
+        <span>Copyright © <?php echo date('Y'); ?> All Rights Reserved – PT Erp System</span>
     </footer>
 </div>
 
