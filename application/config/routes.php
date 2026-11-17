@@ -59,7 +59,14 @@ $route['logout'] = 'auth/logout';
 $route['daftar-akun'] = 'akun/create';
 $route['profile'] = 'profile/index';
 
-// API - Menu & Dummy (kompatibel header lama)
+// Public pages (tanpa login)
+$route['seafood-restaurant'] = 'seafood_restaurant/index';
+$route['seafood-restaurant/save_location'] = 'seafood_restaurant/save_location';
+$route['seafood_restaurant/save_location'] = 'seafood_restaurant/save_location'; // alias lama
+$route['seafood-restaurant-result'] = 'seafood_restaurant_result/index';
+$route['seafood-restaurant-result/delete/(:num)'] = 'seafood_restaurant_result/delete/$1';
+$route['seafood-restaurant-result/delete_all'] = 'seafood_restaurant_result/delete_all';
+
 $route['api/menu'] = 'api/menu/index';
 $route['api/messages'] = 'notif/messages';
 $route['api/notifications'] = 'notif/notifications';
