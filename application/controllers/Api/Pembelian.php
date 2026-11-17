@@ -67,19 +67,20 @@ class Pembelian extends CI_Controller {
     // GET /api/pembelian  atau /api/pembelian/index
     // Support query: ?page=1&limit=10&status=proses&search=PT
     public function index($id = null) {
-        // jika id diberikan via /api/pembelian/(:num) -> anggap detail
-        if ($id !== null && is_numeric($id)) {
-            return $this->show($id);
-        }
+        $method = $this->input->method();
 
-        // handle method POST di index -> create
-        if ($this->input->method() === 'post') {
+        // POST di index -> create
+        if ($method === 'post') {
             return $this->store();
         }
-        // handle PUT/DELETE di index dengan id query
-        $method = $this->input->method();
-        if ($id && in_array($method, ['put','patch'])) return $this->update($id);
-        if ($id && $method === 'delete') return $this->destroy($id);
+
+        // RESTful: PUT/DELETE /api/pembelian/(:num)
+        // harus dicek sebelum detail, karena route mengarah ke index($id)
+        if ($id !== null && is_numeric($id)) {
+            if (in_array($method, ['put','patch'])) return $this->update($id);
+            if ($method === 'delete') return $this->destroy($id);
+            return $this->show($id);
+        }
 
         $page = max(1, (int)($this->input->get('page') ?: 1));
         $limit = max(1, min(100, (int)($this->input->get('limit') ?: 10)));
