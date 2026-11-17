@@ -113,14 +113,14 @@
       <div class="card info-card h-100 p-4">
         <div class="fs-3 mb-2">📍</div>
         <h6 class="fw-bold">Lokasi</h6>
-        <p class="text-muted small mb-0">Jl. Pantai Indah No. 88<br>Jakarta Utara, DKI Jakarta</p>
+        <p class="text-muted small mb-0">Jl Pelabuhan Perikanan, Pegambiran Lemahwungkuk<br>Kota Cirebon, Jawa Barat</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card info-card h-100 p-4">
         <div class="fs-3 mb-2">📞</div>
         <h6 class="fw-bold">Reservasi</h6>
-        <p class="text-muted small mb-0">+62 812-3456-7890<br>hello@oceancatch.example</p>
+        <p class="text-muted small mb-0">+62 812-3456-7890<br>hello.customer@gmail.com</p>
       </div>
     </div>
   </div>
