@@ -251,6 +251,21 @@ INSERT INTO `ci_users` (`id`, `nik`, `email`, `password`, `nama`, `jabatan_id`, 
 	(3, '1234567890123458', 'staff@adminto.com', '$2y$10$NH0fS1Cybohb8f/2PuSYdepXI0oIWGnmKY4h5IFmwdoYwahUSgFvO', 'Staff User', 3, 1, NULL, '2026-09-21 12:59:12', '2026-09-21 14:20:57'),
 	(4, '1234567890123459', 'nonaktif@adminto.com', '$2y$10$NH0fS1Cybohb8f/2PuSYdepXI0oIWGnmKY4h5IFmwdoYwahUSgFvO', 'User Nonaktif', 3, 0, NULL, '2026-09-21 12:59:12', '2026-09-21 14:20:58');
 
+-- Dumping structure for table adminto_db.ci_visitor_locations
+CREATE TABLE IF NOT EXISTS `ci_visitor_locations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `accuracy` decimal(10,2) DEFAULT NULL,
+  `user_agent` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `page` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_ip_address` (`ip_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
