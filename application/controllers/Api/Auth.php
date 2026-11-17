@@ -31,18 +31,18 @@ class Auth extends CI_Controller {
 
         // support JSON raw body & form-data
         $input = json_decode($this->input->raw_input_stream, true);
-        $identity = $this->input->post('identity') ?: ($input['identity'] ?? null);
+        $username = $this->input->post('username') ?: ($input['username'] ?? null);
         $password = $this->input->post('password') ?: ($input['password'] ?? null);
         // alternatif field email/nik
-        if (!$identity) $identity = $this->input->post('email') ?: ($input['email'] ?? null);
-        if (!$identity) $identity = $this->input->post('nik') ?: ($input['nik'] ?? null);
+        if (!$username) $username = $this->input->post('email') ?: ($input['email'] ?? null);
+        if (!$username) $username = $this->input->post('nik') ?: ($input['nik'] ?? null);
 
-        if (!$identity || !$password) {
-            $this->json(['status'=>false,'message'=>'identity (email/nik) dan password wajib diisi'], 400);
+        if (!$username || !$password) {
+            $this->json(['status'=>false,'message'=>'username (email/nik) dan password wajib diisi'], 400);
         }
 
         // cari user by email atau nik (pakai query aman)
-        $user = $this->db->query("SELECT * FROM ci_users WHERE email = ? OR nik = ? LIMIT 1", [$identity,$identity])->row();
+        $user = $this->db->query("SELECT * FROM ci_users WHERE email = ? OR nik = ? LIMIT 1", [$username,$username])->row();
         if (!$user) {
             $this->json(['status'=>false,'message'=>'Email/NIK tidak ditemukan'], 404);
         }
