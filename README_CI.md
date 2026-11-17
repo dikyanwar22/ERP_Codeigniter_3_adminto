@@ -27,6 +27,8 @@ Tables: `ci_jabatan`, `ci_users`, `ci_modul` (4 level), `ci_akses`
 - **Bisa login pakai `email` ATAU `nik`** (query `WHERE email=? OR nik=?`)
 - Cek `status`: 0=nonaktif → tidak bisa login (flash error), 1=aktif → lanjut `password_verify`
 - `GET /logout` → destroy session
+- `GET /auth/check_session` → JSON `{logged_in: bool}` (dipakai auto-logout)
+- **Auto-logout**: saat session habis, scroll mouse / geser layar memicu pengecekan; jika tidak login → redirect ke `/login` (±1,5 detik)
 - `MY_Controller` → cek `logged_in` di session, redirect ke login jika belum
 
 **Akun Demo (pass: `admin123`):**
