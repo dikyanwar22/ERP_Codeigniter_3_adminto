@@ -31,8 +31,16 @@
   }
   .menu-card:hover { transform: translateY(-5px); box-shadow: 0 18px 38px rgba(15,76,117,.16); }
   .menu-thumb {
-    height: 150px; display: flex; align-items: center; justify-content: center;
+    position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
     font-size: 64px; background: linear-gradient(135deg, #e8f4fb 0%, #cfe9f7 100%);
+  }
+  .menu-thumb img {
+    display: block; width: 100%; height: 100%; max-width: 100%;
+    object-fit: cover; object-position: center;
+  }
+  @media (max-width: 575.98px) {
+    .menu-thumb { aspect-ratio: 16 / 10; }
   }
   .menu-card .price { color: var(--ocean-2); font-weight: 800; }
   .tag-pill { background: #ffe9e9; color: #d64545; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
@@ -82,7 +90,12 @@
     <?php foreach ($menu as $m): ?>
       <div class="col-sm-6 col-lg-3">
         <div class="card menu-card">
-          <div class="menu-thumb"><img width="200" height="200" src="<?= $m['gambar'] ?>"></div>
+          <div class="menu-thumb">
+            <img src="<?= htmlspecialchars($m['gambar']) ?>"
+                 alt="<?= htmlspecialchars($m['nama']) ?>"
+                 loading="lazy" decoding="async" referrerpolicy="no-referrer"
+                 onerror="this.style.display='none'">
+          </div>
           <div class="card-body d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-1">
               <h5 class="fw-bold mb-0" style="font-size:16px;"><?= htmlspecialchars($m['nama']) ?></h5>
