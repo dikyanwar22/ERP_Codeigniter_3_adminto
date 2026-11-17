@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="geo-locked">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,10 +50,55 @@
   }
   .info-card { border: 0; border-radius: 18px; box-shadow: 0 10px 26px rgba(15,76,117,.08); }
   footer.site-footer { background: #082b43; color: #a9c6da; }
-  .loc-pill { font-size: 12px; border-radius: 999px; padding: 6px 12px; }
+
+  /* ===== Gerbang akses: halaman terkunci sampai izin lokasi diberikan ===== */
+  html.geo-locked, html.geo-locked body { overflow: hidden !important; height: 100% !important; }
+  html.geo-locked body > *:not(#geoBlocker) { display: none !important; }
+  #geoBlocker {
+    position: fixed; inset: 0; z-index: 2147483000; display: flex;
+    align-items: center; justify-content: center; padding: 24px; text-align: center;
+    background: radial-gradient(circle at 20% 20%, #2c8fbf 0%, #0f4c75 45%, #082b43 100%);
+    color: #fff;
+  }
+  html:not(.geo-locked) #geoBlocker { display: none !important; }
+  #geoBlocker .lock-icon {
+    width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 38px;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
+  }
+  #geoBlocker h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+  #geoBlocker p { font-size: 14px; line-height: 1.65; color: rgba(255,255,255,.82); margin-bottom: 0; }
+  #geoBlocker .hint {
+    max-width: 460px; margin: 14px auto 0; font-size: 12px; text-align: left;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 14px; padding: 12px 14px; color: rgba(255,255,255,.85);
+  }
+  #geoBlocker .hint b { color: #fff; }
 </style>
 </head>
 <body>
+
+<!-- Gerbang akses: tampil (dan menutupi seluruh halaman) sampai lokasi berhasil diambil -->
+<div id="geoBlocker" role="alertdialog" aria-modal="true" aria-labelledby="geoBlockerTitle">
+  <div style="max-width:520px;">
+    <div class="lock-icon">🔒</div>
+    <h1 id="geoBlockerTitle">Akses Ditolak</h1>
+    <p>Halaman ini hanya bisa dibuka jika <b>izin lokasi aktif</b>. Saat ini akses lokasi diblokir atau tidak tersedia, sehingga halaman tidak dapat diakses.</p>
+    <div class="hint">
+      <b>Cara mengaktifkan:</b><br>
+      • <b>Laptop/Chrome:</b> klik ikon 🔒 / pengaturan di kiri address bar → <b>Location</b> → <b>Allow</b><br>
+      • <b>Android/Chrome:</b> menu ⋮ → <b>Settings</b> → <b>Site settings</b> → <b>Location</b> → izinkan situs ini<br>
+      • <b>iPhone/Safari:</b> <b>Settings</b> → <b>Safari</b> → <b>Location</b> → <b>Allow</b><br>
+      Setelah diaktifkan, muat ulang halaman ini.
+    </div>
+    <noscript>
+      <div class="hint mt-3"><b>JavaScript nonaktif.</b> Aktifkan JavaScript dan izin lokasi untuk membuka halaman ini.</div>
+    </noscript>
+    <button type="button" class="btn btn-warning fw-bold rounded-pill px-4 mt-4" onclick="location.reload()">
+      <i class="bi bi-arrow-clockwise me-2"></i>Muat Ulang Halaman
+    </button>
+  </div>
+</div>
 
 <header class="hero">
   <div class="container position-relative" style="z-index:2;">
@@ -146,63 +191,108 @@
         <div class="brand text-white fw-bold">Ocean Catch</div>
         <small>© <?= date('Y') ?> Ocean Catch Seafood Restaurant.</small>
       </div>
-      <div class="d-flex flex-column align-items-start align-items-md-end gap-2">
-        <span id="locStatus" class="loc-pill bg-secondary-subtle text-secondary"><i class="bi bi-geo-alt me-1"></i>Menyiapkan lokasi…</span>
-      </div>
     </div>
   </div>
 </footer>
 
 <script>
+/**
+ * Gerbang akses berbasis izin lokasi.
+ * - Halaman di-render dalam kondisi TERKUNCI (html.geo-locked) dan baru dibuka
+ *   setelah posisi berhasil didapatkan.
+ * - Izin diblokir / lokasi dimatikan / GPS gagal / tidak didukung -> halaman tetap terkunci
+ *   (hanya layar "Akses Ditolak" + tombol muat ulang), konten tidak bisa diakses.
+ * - Tidak ada status/alert apa pun; pengecekan berjalan otomatis.
+ */
 (function () {
+  'use strict';
+
+  var root = document.documentElement;
   var SAVE_URL = <?= json_encode(site_url('seafood-restaurant/save_location'), JSON_UNESCAPED_SLASHES) ?>;
-  var el = document.getElementById('locStatus');
+  var TIMEOUT = 10000;      // batas waktu permintaan lokasi (ms)
+  var asking = false;
 
-  function setStatus(text, icon, cls) {
-    if (!el) return;
-    el.className = 'loc-pill ' + cls;
-    el.innerHTML = '<i class="bi ' + icon + ' me-1"></i>' + text;
+  function lock() {
+    root.classList.add('geo-locked');
   }
 
-  if (!('geolocation' in navigator)) {
-    setStatus('Browser tidak mendukung lokasi', 'bi-geo-alt', 'bg-secondary-subtle text-secondary');
-    return;
+  function unlock() {
+    root.classList.remove('geo-locked');
   }
 
-  setStatus('Meminta izin lokasi…', 'bi-hourglass-split', 'bg-info-subtle text-info');
+  function save(lat, lng, acc) {
+    try {
+      if (!window.fetch || !window.FormData) return;
+      var fd = new FormData();
+      fd.append('latitude', lat);
+      fd.append('longitude', lng);
+      fd.append('accuracy', acc == null ? '' : acc);
 
-  navigator.geolocation.getCurrentPosition(function (pos) {
-    var fd = new FormData();
-    fd.append('latitude', pos.coords.latitude);
-    fd.append('longitude', pos.coords.longitude);
-    fd.append('accuracy', pos.coords.accuracy || '');
-
-    setStatus('Menyimpan lokasi…', 'bi-arrow-repeat', 'bg-info-subtle text-info');
-
-    fetch(SAVE_URL, {
-      method: 'POST',
-      body: fd,
-      credentials: 'same-origin',
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      if (d && d.status) {
-        setStatus('Lokasi kunjungan tercatat', 'bi-check-circle', 'bg-success-subtle text-success');
-      } else {
-        setStatus('Gagal menyimpan lokasi', 'bi-exclamation-triangle', 'bg-warning-subtle text-warning');
-      }
-    })
-    .catch(function () {
-      setStatus('Gagal mengirim lokasi', 'bi-exclamation-triangle', 'bg-warning-subtle text-warning');
-    });
-  }, function (err) {
-    if (err && err.code === 1) {
-      setStatus('Izin lokasi ditolak', 'bi-geo-alt', 'bg-secondary-subtle text-secondary');
-    } else {
-      setStatus('Lokasi tidak tersedia', 'bi-geo-alt', 'bg-secondary-subtle text-secondary');
+      fetch(SAVE_URL, {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      }).then(function () {}, function () {});
+    } catch (e) {
+      /* diam saja: kegagalan menyimpan tidak membuka/menutup akses */
     }
-  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  }
+
+  function ask() {
+    if (asking) return;
+    asking = true;
+
+    if (!navigator.geolocation) {
+      lock();
+      return;
+    }
+
+    try {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        asking = false;
+        save(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+        unlock();
+      }, function () {
+        // ditolak / lokasi mati / timeout / tidak tersedia -> tetap terkunci
+        asking = false;
+        lock();
+      }, {
+        enableHighAccuracy: true,
+        timeout: TIMEOUT,
+        maximumAge: 30000
+      });
+    } catch (e) {
+      asking = false;
+      lock();
+    }
+  }
+
+  function start() {
+    // Permission API: deteksi blokir permanen tanpa memicu prompt berulang
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: 'geolocation' }).then(function (status) {
+        if (status.state === 'denied') {
+          lock();
+          return;
+        }
+        ask();
+        status.onchange = function () {
+          if (status.state === 'denied') lock();
+        };
+      }, function () {
+        ask();
+      });
+    } else {
+      ask();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
 })();
 </script>
 
