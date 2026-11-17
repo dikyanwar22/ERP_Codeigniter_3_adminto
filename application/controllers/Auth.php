@@ -58,6 +58,21 @@ class Auth extends CI_Controller {
         $this->load->view('auth/login', $data);
     }
 
+    public function check_session() {
+        $logged = (bool) $this->session->userdata('logged_in');
+        $u = $this->session->userdata('user');
+        $userId = ($logged && is_array($u) && isset($u['id'])) ? $u['id'] : null;
+
+        $this->output
+            ->set_status_header($logged ? 200 : 401)
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'logged_in'   => $logged,
+                'user_id'     => $userId,
+                'server_time' => date('c'),
+            ]));
+    }
+
     public function logout() {
         $this->session->sess_destroy();
         redirect('login');

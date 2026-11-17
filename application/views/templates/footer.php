@@ -62,5 +62,73 @@ document.addEventListener('click', function(e) {
     });
 });
 </script>
+<script>
+(function () {
+    var LOGIN_URL = <?= json_encode(base_url('login'), JSON_UNESCAPED_SLASHES) ?>;
+    var CHECK_URL = <?= json_encode(base_url('auth/check_session'), JSON_UNESCAPED_SLASHES) ?>;
+    var CHECK_INTERVAL = 1500;
+    var REDIRECT_DELAY = 1500;
+
+    var checking = false;
+    var expired = false;
+    var lastCheck = 0;
+
+    function goToLogin() {
+        window.location.replace(LOGIN_URL);
+    }
+
+    function showExpired() {
+        if (expired) return;
+        expired = true;
+
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sesi Login Berakhir',
+                text: 'Anda akan diarahkan ke halaman login...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                timer: REDIRECT_DELAY,
+                timerProgressBar: true
+            }).then(goToLogin);
+        }
+        setTimeout(goToLogin, REDIRECT_DELAY + 300);
+    }
+
+    function checkSession(force) {
+        if (checking || expired) return;
+
+        var now = Date.now();
+        if (!force && (now - lastCheck) < CHECK_INTERVAL) return;
+        lastCheck = now;
+        checking = true;
+
+        fetch(CHECK_URL, {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (!data || data.logged_in !== true) showExpired();
+        })
+        .catch(function () {
+        })
+        .then(function () { checking = false; });
+    }
+
+    document.addEventListener('scroll', function () { checkSession(false); }, { passive: true, capture: true });
+    document.addEventListener('touchmove', function () { checkSession(false); }, { passive: true, capture: true });
+    document.addEventListener('touchstart', function () { checkSession(false); }, { passive: true, capture: true });
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) checkSession(true);
+    });
+    window.addEventListener('focus', function () { checkSession(true); });
+    window.addEventListener('pageshow', function () { checkSession(true); });
+})();
+</script>
 </body>
 </html>
