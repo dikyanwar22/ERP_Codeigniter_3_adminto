@@ -32,7 +32,6 @@
             <i class="bi bi-chevron-left"></i>
         </button>
         <nav class="topnav" id="topnav">
-            <!-- diisi via jQuery AJAX dari /api/menu -->
         </nav>
         <button class="scroll-btn scroll-right" id="scrollRight" aria-label="Scroll right">
             <i class="bi bi-chevron-right"></i>
@@ -50,7 +49,6 @@
                     <span id="msgCountHeader" class="badge bg-success">0 baru</span>
                 </div>
                 <div id="messageList" class="list-group list-group-flush" style="max-height:320px; overflow-y:auto;">
-                    <!-- diisi via jQuery dummy -->
                 </div>
                 <div class="p-2 border-top text-center">
                     <a href="#" class="btn btn-sm btn-primary w-100" id="btnLihatPesan">Lihat Semua Pesan</a>
@@ -68,7 +66,6 @@
                     <a href="#" id="btnTandaiBaca" class="small text-primary text-decoration-none">Tandai dibaca</a>
                 </div>
                 <div id="notificationList" class="list-group list-group-flush" style="max-height:360px; overflow-y:auto;">
-                    <!-- diisi via jQuery dummy -->
                 </div>
                 <div class="p-2 border-top d-flex gap-2">
                     <a href="#" class="btn btn-sm btn-light flex-grow-1">Pengaturan</a>
@@ -94,14 +91,12 @@
     </div>
 </header>
 
-<!-- Mobile Drawer - diisi via jQuery -->
 <div class="mobile-drawer" id="mobileDrawer">
     <div class="drawer-header d-flex justify-content-between align-items-center p-3 border-bottom">
         <span class="fw-bold text-white"><i class="ri-dashboard-line me-2"></i>ADMINTO</span>
         <button class="btn btn-sm btn-outline-light" id="mobileDrawerClose"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="drawer-body p-2" id="drawerBody">
-        <!-- diisi via jQuery -->
     </div>
 </div>
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -121,21 +116,18 @@
             </div>
         <?php endif; ?>
 
-<!-- jQuery render menu full via API -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 var BASE_URL = "<?= base_url() ?>";
 var CURRENT_URL = "<?= uri_string() ?>";
 if (!CURRENT_URL) CURRENT_URL = "dashboard";
 function escHtmlMenu(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-// Render top menu via JSON agar tidak lelet (1x AJAX, bukan PHP loop per request)
 $(function(){
   $.getJSON(BASE_URL + 'api/menu', function(menus){
     if(!menus || !menus.length){
       $('#topnav').html('<a href="'+BASE_URL+'dashboard" class="topnav-item active"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>');
       return;
     }
-    // cari best_match id (longest prefix url)
     var all = [];
     function collect(nodes){ nodes.forEach(function(n){ if(n.url) all.push(n); if(n.children) collect(n.children); }); }
     collect(menus);
@@ -188,7 +180,6 @@ $(function(){
       }
     });
     $('#topnav').html(topHtml);
-    // render drawer
     function renderDrawer(nodes, level){
       var h='';
       nodes.forEach(function(m){
@@ -214,7 +205,6 @@ $(function(){
     drawerHtml+='<a href="'+BASE_URL+'profile" class="drawer-link '+(isProfile?'active':'')+'"><i class="ri-user-line me-2"></i> Profile</a>';
     drawerHtml+='<a href="'+BASE_URL+'logout" class="drawer-link logout-btn"><i class="ri-logout-box-line me-2"></i> Logout</a>';
     $('#drawerBody').html(drawerHtml);
-    // --- re-bind logic untuk topnav yang baru di-render via AJAX ---
     (function(){
       var topnav = document.getElementById('topnav');
       var leftBtn = document.getElementById('scrollLeft');
@@ -246,7 +236,6 @@ $(function(){
       }
       if(leftBtn && topnav) leftBtn.addEventListener('click', function(){ topnav.scrollBy({left:-300, behavior:'smooth'}); });
       if(rightBtn && topnav) rightBtn.addEventListener('click', function(){ topnav.scrollBy({left:300, behavior:'smooth'}); });
-      // dropdown fixed positioning
       document.querySelectorAll('.topnav-item.dropdown').forEach(function(dd){
         dd.addEventListener('show.bs.dropdown', function(){
           var toggle = dd.querySelector('[data-bs-toggle="dropdown"]');
@@ -277,7 +266,7 @@ $(function(){
           dd.querySelectorAll('.dropdown-submenu.flip-left').forEach(function(s){ s.classList.remove('flip-left'); });
         });
       });
-      // submenu click toggle
+
       document.querySelectorAll('.dropdown-submenu > .dropdown-item').forEach(function(item){
         item.addEventListener('click', function(e){
           e.preventDefault(); e.stopPropagation();
@@ -297,7 +286,7 @@ $(function(){
           }
         });
       });
-      // leaf close
+
       document.querySelectorAll('.topnav-item.dropdown .dropdown-menu .dropdown-item').forEach(function(leaf){
         if(leaf.parentElement.classList.contains('dropdown-submenu')) return;
         leaf.addEventListener('click', function(){
@@ -313,7 +302,6 @@ $(function(){
   }).fail(function(){ $('#topnav').html('<a href="'+BASE_URL+'dashboard" class="topnav-item"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>'); });
 });
 
-// === DUMMY PESAN & NOTIFIKASI via Controller (tanpa database) - render via jQuery ===
 $(function(){
   var dummyMessages = [];
   var dummyNotifications = [];
@@ -368,12 +356,11 @@ $(function(){
     $('#notifCountHeader').parent().find('h6').html('<i class="ri-notification-3-line me-2 text-danger"></i>Notifikasi'+(unread>0?' <span class="badge bg-danger ms-2" style="font-size:10px;">'+unread+' baru</span>':''));
   }
 
-  // Ambil data dummy dari Controller via jQuery AJAX
   function loadMessages(){
     $.getJSON(BASE_URL + 'notif/messages')
       .done(function(data){ dummyMessages = data || []; renderMessages(); })
       .fail(function(){
-        // fallback jika endpoint api yang dipakai
+
         $.getJSON(BASE_URL + 'api/messages')
           .done(function(data){ dummyMessages = data || []; renderMessages(); })
           .fail(function(){ $('#messageList').html('<div class="text-center text-muted small py-4">Gagal memuat pesan</div>'); });
@@ -392,14 +379,13 @@ $(function(){
   loadMessages();
   loadNotifications();
 
-  // Tandai semua notifikasi dibaca (hanya di memori dummy, tanpa DB)
   $(document).on('click', '#btnTandaiBaca', function(e){
     e.preventDefault();
     dummyNotifications.forEach(function(n){ n.unread=false; });
     renderNotifications();
     if(window.Swal) Swal.fire({icon:'success', title:'Ditandai dibaca', text:'Semua notifikasi ditandai sudah dibaca.', timer:1500, showConfirmButton:false});
   });
-  // Lihat semua - demo SweetAlert
+
   $(document).on('click', '#btnLihatPesan, #btnLihatNotif', function(e){
     e.preventDefault();
     var isPesan = $(this).attr('id')==='btnLihatPesan';
