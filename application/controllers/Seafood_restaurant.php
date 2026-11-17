@@ -21,14 +21,14 @@ class Seafood_restaurant extends CI_Controller {
     public function index() {
         $data['title'] = 'Seafood Restaurant';
         $data['menu'] = [
-            ['nama' => 'Grilled Salmon', 'desc' => 'Salmon panggang dengan saus lemon butter dan sayuran segar.', 'harga' => 185000, 'emoji' => '🐟', 'tag' => 'Best Seller'],
-            ['nama' => 'Kepiting Saus Padang', 'desc' => 'Kepiting segar berbalut saus padang pedas gurih.', 'harga' => 225000, 'emoji' => '🦀', 'tag' => 'Favorit'],
-            ['nama' => 'Udang Bakar Madu', 'desc' => 'Udang jumbo dibakar dengan olesan madu dan bawang putih.', 'harga' => 145000, 'emoji' => '🦐', 'tag' => 'Best Seller'],
-            ['nama' => 'Cumi Crispy', 'desc' => 'Cumi goreng tepung renyah, disajikan dengan saus tartar.', 'harga' => 85000, 'emoji' => '🦑', 'tag' => ''],
-            ['nama' => 'Lobster Thermidor', 'desc' => 'Lobster panggang dengan saus keju creamy dan herbs.', 'harga' => 395000, 'emoji' => '🦞', 'tag' => 'Premium'],
-            ['nama' => 'Fish & Chips', 'desc' => 'Ikan dory crispy dengan kentang goreng dan saus tartar.', 'harga' => 95000, 'emoji' => '🍟', 'tag' => ''],
-            ['nama' => 'Kerang Hijau Saus Tiram', 'desc' => 'Kerang hijau segar dimasak dengan saus tiram dan cabai.', 'harga' => 75000, 'emoji' => '🐚', 'tag' => ''],
-            ['nama' => 'Seafood Platter', 'desc' => 'Paket lengkap udang, cumi, kerang, dan ikan untuk 2–3 orang.', 'harga' => 325000, 'emoji' => '🍽️', 'tag' => 'Sharing'],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Grilled Salmon', 'desc' => 'Salmon panggang dengan saus lemon butter dan sayuran segar.', 'harga' => 185000, 'tag' => 'Best Seller'],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Kepiting Saus Padang', 'desc' => 'Kepiting segar berbalut saus padang pedas gurih.', 'harga' => 225000, 'tag' => 'Favorit'],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Udang Bakar Madu', 'desc' => 'Udang jumbo dibakar dengan olesan madu dan bawang putih.', 'harga' => 145000, 'tag' => 'Best Seller'],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Cumi Crispy', 'desc' => 'Cumi goreng tepung renyah, disajikan dengan saus tartar.', 'harga' => 85000, 'tag' => ''],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Lobster Thermidor', 'desc' => 'Lobster panggang dengan saus keju creamy dan herbs.', 'harga' => 395000, 'tag' => 'Premium'],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Fish & Chips', 'desc' => 'Ikan dory crispy dengan kentang goreng dan saus tartar.', 'harga' => 95000, 'tag' => ''],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Kerang Hijau Saus Tiram', 'desc' => 'Kerang hijau segar dimasak dengan saus tiram dan cabai.', 'harga' => 75000, 'tag' => ''],
+            ['gambar' => 'https://i0.wp.com/resepkoki.id/wp-content/uploads/2017/06/Resep-Sambel-goreng-udang-petai.jpg?fit=500%2C577&ssl=1', 'nama' => 'Seafood Platter', 'desc' => 'Paket lengkap udang, cumi, kerang, dan ikan untuk 2–3 orang.', 'harga' => 325000, 'tag' => 'Sharing'],
         ];
 
         $this->load->view('seafood_restaurant/index', $data);

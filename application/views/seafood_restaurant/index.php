@@ -82,7 +82,7 @@
     <?php foreach ($menu as $m): ?>
       <div class="col-sm-6 col-lg-3">
         <div class="card menu-card">
-          <div class="menu-thumb"><?= $m['emoji'] ?></div>
+          <div class="menu-thumb"><img width="200" height="200" src="<?= $m['gambar'] ?>"></div>
           <div class="card-body d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-1">
               <h5 class="fw-bold mb-0" style="font-size:16px;"><?= htmlspecialchars($m['nama']) ?></h5>
