@@ -75,7 +75,7 @@
         </div>
         <div class="dropdown ms-1">
             <a class="nav-link d-flex align-items-center gap-2 text-white" href="#" data-bs-toggle="dropdown">
-                <img src="https://i.pravatar.cc/100?img=12" class="rounded-circle" width="32" height="32" alt="user">
+                <img src="<?= avatar_url(isset($user['foto']) ? $user['foto'] : null) ?>" class="rounded-circle object-fit-cover" width="32" height="32" alt="user">
                 <span class="d-none d-md-inline small fw-semibold"><?= htmlspecialchars($user['nama']) ?></span>
                 <small class="d-none d-md-inline text-white-50" style="font-size:11px;"><?= htmlspecialchars($user['jabatan_nama']) ?></small>
             </a>

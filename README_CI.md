@@ -40,7 +40,7 @@ Tables: `ci_jabatan`, `ci_users`, `ci_modul` (4 level), `ci_akses`
 - `GET /akun/create` / `POST` → tambah akun (validasi NIK/Email unique, password hash)
 - `GET /akun/register` → publik register tanpa login (status default 1)
 - `GET /akun/edit/{id}` → edit, `akun/delete/{id}`
-- `GET /profile` → edit profil sendiri (nama, nik, email, password opsional)
+- `GET /profile` → profil sendiri: upload avatar (`assets/public/avatar/`), ubah password (dengan konfirmasi). Nama/NIK/Email readonly.
 
 ### 3. CRUD Modul (4 Level) - Hide/Show
 - `GET /modul` → tree admin (semua status) + tabel flat
