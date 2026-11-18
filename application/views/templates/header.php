@@ -104,6 +104,7 @@
 
 <div class="main-content">
     <div class="container-fluid">
+        <?php $this->load->view('templates/breadcrumb'); ?>
         <?php if ($this->session->flashdata('success')): ?>
             <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                 <?= $this->session->flashdata('success') ?>
