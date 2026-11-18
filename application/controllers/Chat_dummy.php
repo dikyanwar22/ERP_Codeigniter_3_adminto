@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *   "total_unread": 4,
  *   "data": [
  *     { "id":1, "nama":"...", "avatar":"...", "pesan":"...",
- *       "waktu":"20261117 10:24:35", "created_at":"2026-11-17 10:24:35", "unread":true }
+ *       "waktu":"2026-11-17 10:24:35", "created_at":"2026-11-17 10:24:35", "unread":true }
  *   ]
  * }
  *
@@ -89,7 +89,7 @@ class Chat_dummy extends CI_Controller {
                 'pesan'      => $r['pesan'],
                 'unread'     => (bool) $r['unread'],
                 'created_at' => date('Y-m-d H:i:s', $ts),
-                'waktu'      => date('Ymd H:i:s', $ts),
+                'waktu'      => date('Y-m-d H:i:s', $ts),
             ];
         }
 
@@ -109,7 +109,7 @@ class Chat_dummy extends CI_Controller {
                 'status'       => true,
                 'total'        => count($data),
                 'total_unread' => $unread,
-                'generated_at' => date('Ymd H:i:s'),
+                'generated_at' => date('Y-m-d H:i:s'),
                 'data'         => $data,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }

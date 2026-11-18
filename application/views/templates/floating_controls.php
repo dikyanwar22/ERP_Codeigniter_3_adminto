@@ -22,7 +22,9 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
 .fab-top {
   background: #fff; color: var(--oc-ocean);
   border: 1px solid rgba(15, 76, 117, .14);
+  opacity: 0; visibility: hidden; pointer-events: none;
 }
+.fab-top.is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
 .fab-chat { background: linear-gradient(135deg, #2c8fbf 0%, #0f4c75 100%); }
 .fab-chat.has-unread::after {
   content: ''; position: absolute; inset: 0; border-radius: 50%;
@@ -185,6 +187,31 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
   'use strict';
   var btn = document.getElementById('backToTop');
   if (!btn) return;
+
+  var THRESHOLD = 200; // px
+  var ticking = false;
+
+  function updateVisibility() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    btn.classList.toggle('is-visible', y > THRESHOLD);
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(updateVisibility);
+    } else {
+      window.setTimeout(updateVisibility, 50);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('load', onScroll, { passive: true });
+  updateVisibility();
+
   btn.addEventListener('click', function (e) {
     e.preventDefault();
     try {

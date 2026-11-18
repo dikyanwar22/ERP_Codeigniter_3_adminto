@@ -77,9 +77,10 @@ php -S 127.0.0.1:8081 -t C:\Users\dicky.anwar\Pictures\buku\adminto
 - `application/views/templates/header.php` → top menu dinamis via `$menus` dari `MY_Controller::render`
 - `application/views/templates/footer.php` → bottom bar mobile (BACK REFRESH HOME PROFILE LOGOUT + FAB)
   + memuat `templates/floating_controls.php` dengan `show_chat = true` → **back-to-top + chatbox tampil di semua view sistem**
-- `application/views/templates/floating_controls.php` → komponen bersama: tombol back-to-top (selalu)
-  dan chatbox "Pesan Masuk" (opsional via `$show_chat`). Opsi `$above_bottom_bar` menaikkan posisi
-  di atas mobile bottom bar. jQuery chat memakai jQuery yang sudah dimuat di `header.php`.
+- `application/views/templates/floating_controls.php` → komponen bersama: tombol back-to-top (muncul
+  hanya setelah scroll > 200px, klik → smooth scroll ke atas) dan chatbox "Pesan Masuk"
+  (opsional via `$show_chat`). Opsi `$above_bottom_bar` menaikkan posisi di atas mobile bottom bar.
+  jQuery chat memakai jQuery yang sudah dimuat di `header.php`.
 - `assets/css/style.css`, `assets/js/main.js` tetap dipakai (scroll horizontal, submenu klik, dll)
 
 ## Halaman Publik (tanpa login)
@@ -94,12 +95,13 @@ php -S 127.0.0.1:8081 -t C:\Users\dicky.anwar\Pictures\buku\adminto
   atau browser tidak mendukung → halaman **tetap terkunci** (hanya tombol muat ulang).
   Berhasil dapat posisi → `geo-locked` dilepas, konten tampil, koordinat dikirim ke `save_location`.
   Tidak ada alert/status ke pengunjung; pengecekan otomatis saat `DOMContentLoaded`.
-- **Tombol mengambang (kanan bawah):** back-to-top (klik → smooth scroll ke atas) tetap ada di halaman ini
-  lewat `templates/floating_controls.php` (`show_chat = false`) dan tetap terlihat walau gerbang lokasi aktif.
+- **Tombol mengambang (kanan bawah):** back-to-top tetap ada di halaman ini lewat
+  `templates/floating_controls.php` (`show_chat = false`), namun hanya muncul setelah halaman
+  digulir (> 200px) dan otomatis hilang saat kembali ke atas.
 - **Chatbox "Pesan Masuk" tidak lagi ada di halaman publik.** Sekarang dimuat dari
   `templates/footer.php` (via `floating_controls` dengan `show_chat = true`), sehingga tampil di semua
   view sistem yang memakai `MY_Controller::render()`. Fitur: tertutup default, total belum dibaca +
-  ikon lonceng, pencarian (filter client-side), avatar + nama user, waktu `date('Ymd H:i:s')`,
+  ikon lonceng, pencarian (filter client-side), avatar + nama user, waktu `date('Y-m-d H:i:s')`,
   isi pesan dipotong `...` (maks 70 karakter), list scroll vertikal,
   klik pesan → tanda belum dibaca hilang & badge berkurang.
 - **Data dummy (JSON) — `GET /api/chat-dummy`** → `application/controllers/Chat_dummy.php`
