@@ -56,6 +56,9 @@ $route['translate_uri_dashes'] = FALSE;
 // Auth
 $route['login'] = 'auth/login';
 $route['logout'] = 'auth/logout';
+$route['lock_screen'] = 'lock_screen/index';
+$route['lock_screen/lock'] = 'lock_screen/lock';
+$route['lock_screen/unlock'] = 'lock_screen/unlock';
 $route['daftar-akun'] = 'akun/create';
 $route['profile'] = 'profile/index';
 

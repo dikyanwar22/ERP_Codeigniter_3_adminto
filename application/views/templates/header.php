@@ -81,6 +81,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="<?= base_url('profile') ?>"><i class="ri-user-line me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="<?= base_url('lock_screen/lock') ?>"><i class="ri-lock-line me-2"></i>Lock Screen</a></li>
                 <li><a class="dropdown-item" href="<?= base_url('akun') ?>"><i class="ri-team-line me-2"></i>Daftar Akun</a></li>
                 <li><a class="dropdown-item" href="<?= base_url('modul') ?>"><i class="ri-apps-2-line me-2"></i>Kelola Modul</a></li>
                 <li><a class="dropdown-item" href="<?= base_url('akses') ?>"><i class="ri-shield-keyhole-line me-2"></i>Akses</a></li>
@@ -203,6 +204,7 @@ $(function(){
     drawerHtml+='<hr class="border-secondary my-2">';
     var isProfile = CURRENT_URL.indexOf('profile')===0 || CURRENT_URL.indexOf('akun')===0;
     drawerHtml+='<a href="'+BASE_URL+'profile" class="drawer-link '+(isProfile?'active':'')+'"><i class="ri-user-line me-2"></i> Profile</a>';
+    drawerHtml+='<a href="'+BASE_URL+'lock_screen/lock" class="drawer-link"><i class="ri-lock-line me-2"></i> Lock Screen</a>';
     drawerHtml+='<a href="'+BASE_URL+'logout" class="drawer-link logout-btn"><i class="ri-logout-box-line me-2"></i> Logout</a>';
     $('#drawerBody').html(drawerHtml);
     (function(){

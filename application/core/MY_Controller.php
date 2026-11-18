@@ -11,6 +11,12 @@ class MY_Controller extends CI_Controller {
         if (!$this->session->userdata('logged_in')) {
             redirect('login');
         }
+
+        // Saat layar terkunci, semua menu/halaman sistem ditolak.
+        if ($this->session->userdata('lock_screen_active') && $this->uri->segment(1) !== 'lock_screen') {
+            redirect('lock_screen');
+        }
+
         $this->user = $this->session->userdata('user');
         $this->jabatan_id = $this->user['jabatan_id'];
 
@@ -20,7 +26,7 @@ class MY_Controller extends CI_Controller {
 
         // cek akses url saat ini (kecuali dashboard, profile, akun)
         $uri = $this->uri->segment(1);
-        $allowed_free = ['dashboard','profile','akun','auth','logout'];
+        $allowed_free = ['dashboard','profile','akun','auth','logout','lock_screen'];
         if ($uri && !in_array($uri, $allowed_free)) {
             // cari modul by url
             $modul = $this->Modul_model->get_by_url($uri.'/'.$this->uri->segment(2));

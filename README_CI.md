@@ -37,6 +37,17 @@ Tables: `ci_jabatan`, `ci_users`, `ci_modul` (4 level), `ci_akses`
 - `staff@adminto.com` / `1234567890123458` (Staff, aktif)
 - `nonaktif@adminto.com` / `1234567890123459` (Staff, **nonaktif 0** → login ditolak)
 
+### 1b. Lock Screen
+- `GET /lock_screen/lock` → mengunci sesi (dipanggil menu **Lock Screen** di dropdown user & drawer mobile)
+- `GET /lock_screen` → halaman kunci bergaya template login/Adminto (tanpa header, menu, chatbox, back-to-top)
+- `POST /lock_screen/unlock` → `password_verify` terhadap `ci_users.id` dari session; sukses → redirect ke `/`
+  (root otomatis masuk ke dashboard), gagal → flash error `lock_error`
+- Status kunci disimpan di session `lock_screen_active` (session login **tidak** dihancurkan)
+- Selama terkunci, `MY_Controller` menolak semua modul dan `Auth` menolak `/`, `/login`, `/logout`
+  → semuanya dipaksa redirect ke `/lock_screen`. Hanya `/auth/check_session` yang tetap dibuka
+  agar watchdog di tab lain tidak salah memberi alert "sesi berakhir".
+- Tombol Back diblokir dengan History API + header no-cache; mengetik URL halaman lain tetap kena guard server.
+
 ### 2. Daftar Akun & Profile
 - `GET /akun` → list `ci_users` + jabatan (MY_Controller)
 - `GET /akun/create` / `POST` → tambah akun (validasi NIK/Email unique, password hash)
@@ -135,8 +146,8 @@ menampilkan IP + koordinat tanpa login — tambahkan proteksi sebelum production
 ```
 application/core/MY_Controller.php
 application/models/User_model.php, Modul_model.php, Akses_model.php, Jabatan_model.php
-application/controllers/Auth.php, Dashboard.php, Akun.php, Profile.php, Modul.php, Akses.php
-application/views/auth/login.php, auth/register.php, dashboard/index.php, akun/*, modul/*, akses/index.php, profile/index.php, templates/header.php, templates/footer.php
+application/controllers/Auth.php, Lock_screen.php, Dashboard.php, Akun.php, Profile.php, Modul.php, Akses.php
+application/views/auth/login.php, auth/register.php, lock_screen/index.php, dashboard/index.php, akun/*, modul/*, akses/index.php, profile/index.php, templates/header.php, templates/footer.php, templates/floating_controls.php
 ```
 
 ## Catatan PHP 8

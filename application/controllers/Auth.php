@@ -6,6 +6,13 @@ class Auth extends CI_Controller {
         parent::__construct();
         $this->load->model('User_model');
         $this->load->model('Jabatan_model');
+
+        // Selama terkunci, jangan izinkan login/logout/root diakses.
+        // check_session tetap dibuka agar watchdog di tab lain tidak salah alert.
+        if ($this->session->userdata('lock_screen_active')
+            && $this->router->fetch_method() !== 'check_session') {
+            redirect('lock_screen');
+        }
     }
 
     public function index() {
