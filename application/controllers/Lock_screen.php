@@ -1,16 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Layar kunci sesi.
- *
- * - /lock_screen/lock   -> mengunci sesi (dipanggil dari menu header)
- * - /lock_screen        -> tampilan kunci (tidak ada menu/navigasi)
- * - /lock_screen/unlock -> verifikasi kata sandi, lalu kembali ke '/'
- *
- * Selama terkunci, MY_Controller dan Auth menolak semua halaman lain
- * dan memaksa redirect ke /lock_screen.
- */
 class Lock_screen extends CI_Controller {
 
     const KEY = 'lock_screen_active';
@@ -18,7 +8,6 @@ class Lock_screen extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-        // Cegah halaman sebelum dikunci tersimpan di cache browser.
         $this->output
             ->set_header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0')
             ->set_header('Pragma: no-cache')
@@ -30,8 +19,6 @@ class Lock_screen extends CI_Controller {
             redirect('login');
         }
 
-        // Sudah tidak terkunci (misal setelah tombol back dari halaman unlock):
-        // jangan mengunci ulang, langsung kembali ke halaman utama.
         if (!$this->session->userdata(self::KEY)) {
             redirect(base_url('/'));
         }

@@ -7,18 +7,12 @@ class Modul extends MY_Controller {
         $this->load->model('Modul_model');
     }
 
-    // DataTables: tampilkan semua modul top (level 1) saja - OPTIMIZED via JSON
     public function index() {
         $data['title'] = 'Kelola Modul';
-        // tidak query modul_top lagi agar tidak N+1 lelet; data diambil via AJAX json()
         $this->render('modul/index', $data);
     }
 
-    // JSON endpoint untuk DataTables serverSide - modul top (parent_id=0)
-    // GET /modul/json?draw=1&start=0&length=10&search[value]=...&order[0][column]=5&order[0][dir]=asc
     public function json() {
-        // untuk DataTables: map kolom sesuai view modul/index.php
-        // 0:id, 1:nama_modul, 2:icon, 3:url, 4:tipe, 5:urutan, 6:status, 7:aksi
         $colMap = [0=>'id',1=>'nama_modul',2=>'icon',3=>'url',4=>'tipe',5=>'urutan',6=>'status',7=>'id'];
         $draw   = (int)$this->input->get('draw');
         $start  = (int)$this->input->get('start');
@@ -31,7 +25,7 @@ class Modul extends MY_Controller {
             $order_col = (int)($order[0]['column'] ?? 5);
             $order_dir = ($order[0]['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
         }
-        // sanitasi length: batasi max 100 agar ringan
+
         if ($length > 100) $length = 100;
         if ($length < 1) $length = 10;
 
@@ -39,7 +33,6 @@ class Modul extends MY_Controller {
         $recordsFiltered = $this->Modul_model->count_filtered_modul(0, $search_val);
         $rows = $this->Modul_model->get_datatables_mapped(0, $start, $length, $search_val, $order_col, $order_dir, $colMap);
 
-        // siapkan data untuk DataTables: kirim raw fields, render di JS
         $data = [];
         foreach ($rows as $r) {
             $data[] = [
@@ -66,14 +59,13 @@ class Modul extends MY_Controller {
             ]));
     }
 
-    // JSON endpoint untuk detail children - GET /modul/json_detail/{id}
     public function json_detail($id) {
         $id = (int)$id;
         $modul = $this->Modul_model->get_by_id($id);
         if (!$modul) {
             $this->output->set_status_header(404)->set_content_type('application/json')->set_output(json_encode(['error'=>'Modul tidak ditemukan'])); return;
         }
-        // map kolom detail: 0:id,1:nama,2:icon,3:url,4:level,5:tipe,6:urutan,7:status,8:aksi
+
         $colMap = [0=>'id',1=>'nama_modul',2=>'icon',3=>'url',4=>'level',5=>'tipe',6=>'urutan',7=>'status',8=>'id'];
         $draw   = (int)$this->input->get('draw');
         $start  = (int)$this->input->get('start');
@@ -119,14 +111,12 @@ class Modul extends MY_Controller {
             ]));
     }
 
-    // Detail: halaman detail modul - data children diambil via AJAX json_detail()
     public function detail($id) {
         $modul = $this->Modul_model->get_by_id($id);
         if (!$modul) show_404();
         $data['title'] = 'Detail: '.$modul->nama_modul;
         $data['modul'] = $modul;
         $data['breadcrumb'] = $this->Modul_model->get_breadcrumb($id);
-        // children tidak diquery di sini lagi (ambil via AJAX biar ringan)
         $data['child_count_total'] = $this->Modul_model->count_children($id);
         $this->render('modul/detail', $data);
     }
@@ -181,7 +171,6 @@ class Modul extends MY_Controller {
                 ];
                 $this->Modul_model->insert($ins);
                 $this->session->set_flashdata('success','Modul ditambahkan');
-                // redirect ke detail parent jika ada, else ke index
                 if ($parent_id != 0) redirect('modul/detail/'.$parent_id);
                 else redirect('modul');
             }
@@ -250,7 +239,6 @@ class Modul extends MY_Controller {
                 $this->Modul_model->update($id,$upd);
                 $this->update_children_level($id, $level);
                 $this->session->set_flashdata('success','Modul diupdate');
-                // redirect ke parent detail
                 if ($parent_id != 0) redirect('modul/detail/'.$parent_id);
                 else redirect('modul');
             }

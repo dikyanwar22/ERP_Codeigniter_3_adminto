@@ -15,9 +15,6 @@ class Akun extends MY_Controller {
     }
 
     public function create() {
-        // daftar akun - bisa diakses tanpa login? tapi kita buat harus login, kecuali jika belum ada user? untuk sekarang butuh login
-        // supaya bisa daftar akun baru oleh admin, kita pakai MY_Controller (harus login)
-        // Jika ingin publik, buat method register terpisah - kita buat create tetap butuh login admin
         $data['title'] = 'Tambah Akun';
         $data['jabatan'] = $this->Jabatan_model->get_all();
         if ($this->input->post()) {
@@ -54,9 +51,7 @@ class Akun extends MY_Controller {
         $this->render('akun/create', $data);
     }
 
-    // publik register tanpa login (untuk daftar akun awal) - bisa diakses /akun/register
     public function register() {
-        // jika sudah login redirect
         if ($this->session->userdata('logged_in')) redirect('dashboard');
         $this->load->model('Jabatan_model');
         $data['title'] = 'Daftar Akun Baru';
@@ -118,7 +113,6 @@ class Akun extends MY_Controller {
                     $pass = $this->input->post('password', true);
                     if ($pass) $upd['password'] = password_hash($pass, PASSWORD_BCRYPT);
                     $this->User_model->update($id,$upd);
-                    // update session if edit self
                     if ($this->user['id'] == $id) {
                         $fresh = $this->User_model->get_by_id($id);
                         $jab = $this->Jabatan_model->get_by_id($fresh->jabatan_id);

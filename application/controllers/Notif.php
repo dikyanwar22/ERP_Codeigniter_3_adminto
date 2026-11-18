@@ -1,17 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Controller Dummy untuk Pesan & Notifikasi
- * Data dummy berada di controller (tanpa database)
- * Diakses via jQuery: /notif/messages dan /notif/notifications
- */
 class Notif extends MY_Controller {
     public function __construct() {
         parent::__construct();
     }
 
-    // GET /notif/messages -> JSON dummy pesan
     public function messages() {
         $data = [
             ['id'=>1, 'nama'=>'Budi Santoso', 'avatar'=>'https://i.pravatar.cc/100?img=15', 'waktu'=>'2m lalu', 'pesan'=>'Apakah pesanan sudah dikirim?', 'unread'=>true],
@@ -25,7 +19,6 @@ class Notif extends MY_Controller {
             ->set_output(json_encode($data));
     }
 
-    // GET /notif/notifications -> JSON dummy notifikasi
     public function notifications() {
         $data = [
             ['id'=>1, 'judul'=>'Pesanan baru masuk', 'deskripsi'=>'#ADM-0142 - $2,499', 'waktu'=>'5 menit lalu', 'icon'=>'ri-shopping-cart-line', 'bg'=>'success', 'unread'=>true],

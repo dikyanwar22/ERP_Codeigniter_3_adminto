@@ -18,10 +18,6 @@ class Profile extends MY_Controller {
         $this->render('profile/index', $data);
     }
 
-    /**
-     * Upload / ganti foto profile.
-     * File disimpan ke assets/public/avatar/
-     */
     public function update_avatar() {
         if ($this->input->method() !== 'post') {
             redirect('profile');
@@ -69,13 +65,11 @@ class Profile extends MY_Controller {
         $old = $this->User_model->get_by_id($id);
 
         if (!$this->User_model->update($id, ['foto' => $rel])) {
-            // batalkan: hapus file baru jika gagal simpan ke DB
             @unlink($file['full_path']);
             $this->session->set_flashdata('error', 'Gagal menyimpan foto profile.');
             redirect('profile');
         }
 
-        // hapus foto lama (hanya jika masih di folder avatar)
         if ($old && !empty($old->foto)) {
             $oldPath = avatar_path($old->foto);
             if ($oldPath && strpos(str_replace('\\', '/', $oldPath), '/'.self::AVATAR_DIR) !== FALSE) {
@@ -88,9 +82,6 @@ class Profile extends MY_Controller {
         redirect('profile');
     }
 
-    /**
-     * Ubah password. Nama, NIK, dan Email tidak bisa diubah dari halaman ini.
-     */
     public function update_password() {
         if ($this->input->method() !== 'post') {
             redirect('profile');
@@ -115,10 +106,6 @@ class Profile extends MY_Controller {
         redirect('profile');
     }
 
-    /**
-     * Sinkronkan data user di session agar perubahan langsung terlihat
-     * di seluruh halaman tanpa perlu login ulang.
-     */
     private function sync_session($id) {
         $fresh = $this->User_model->get_by_id($id);
         if (!$fresh) {

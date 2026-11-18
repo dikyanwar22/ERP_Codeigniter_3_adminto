@@ -12,10 +12,9 @@ class Akses extends MY_Controller {
     public function index() {
         $data['title'] = 'Kelola Akses Jabatan';
         $data['jabatan'] = $this->Jabatan_model->get_all();
-        // default jabatan pertama atau dari GET
         $jid = $this->input->get('jabatan_id') ?: ($data['jabatan'] ? $data['jabatan'][0]->id : 0);
         $data['selected_jabatan'] = $jid;
-        $data['tree'] = $this->Modul_model->get_all_tree(); // hanya status 1
+        $data['tree'] = $this->Modul_model->get_all_tree();
         $data['akses_ids'] = $this->Akses_model->get_by_jabatan($jid);
 
         if ($this->input->post('jabatan_id')) {
