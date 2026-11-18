@@ -51,9 +51,8 @@
   .info-card { border: 0; border-radius: 18px; box-shadow: 0 10px 26px rgba(15,76,117,.08); }
   footer.site-footer { background: #082b43; color: #a9c6da; }
 
-  /* ===== Gerbang akses: halaman terkunci sampai izin lokasi diberikan ===== */
   html.geo-locked, html.geo-locked body { overflow: hidden !important; height: 100% !important; }
-  html.geo-locked body > *:not(#geoBlocker) { display: none !important; }
+  html.geo-locked body > *:not(#geoBlocker):not(.fab-stack) { display: none !important; }
   #geoBlocker {
     position: fixed; inset: 0; z-index: 2147483000; display: flex;
     align-items: center; justify-content: center; padding: 24px; text-align: center;
@@ -296,5 +295,6 @@
 })();
 </script>
 
+<?php $this->load->view('templates/floating_controls', array('show_chat' => false)); ?>
 </body>
 </html>

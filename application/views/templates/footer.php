@@ -34,6 +34,9 @@ $isProfile = (strpos($cur,'profile')===0 || strpos($cur,'akun')===0);
     </a>
 </nav>
 
+<!-- chatbox -->
+<?php $this->load->view('templates/floating_controls', array('show_chat' => true, 'above_bottom_bar' => true)); ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

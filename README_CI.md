@@ -76,7 +76,56 @@ php -S 127.0.0.1:8081 -t C:\Users\dicky.anwar\Pictures\buku\adminto
 ## Template
 - `application/views/templates/header.php` → top menu dinamis via `$menus` dari `MY_Controller::render`
 - `application/views/templates/footer.php` → bottom bar mobile (BACK REFRESH HOME PROFILE LOGOUT + FAB)
+  + memuat `templates/floating_controls.php` dengan `show_chat = true` → **back-to-top + chatbox tampil di semua view sistem**
+- `application/views/templates/floating_controls.php` → komponen bersama: tombol back-to-top (selalu)
+  dan chatbox "Pesan Masuk" (opsional via `$show_chat`). Opsi `$above_bottom_bar` menaikkan posisi
+  di atas mobile bottom bar. jQuery chat memakai jQuery yang sudah dimuat di `header.php`.
 - `assets/css/style.css`, `assets/js/main.js` tetap dipakai (scroll horizontal, submenu klik, dll)
+
+## Halaman Publik (tanpa login)
+### Seafood Restaurant — `GET /seafood-restaurant`
+- Landing page menu seafood (`application/views/seafood_restaurant/index.php`)
+- Saat halaman dibuka, browser meminta izin lokasi lalu `POST /seafood-restaurant/save_location`
+  (`latitude`, `longitude`, `accuracy`) → simpan + `ip_address`, `user_agent`, `page`, `created_at`
+- Respons: `201 {"status":true}` / `422` jika koordinat tidak valid / `405` jika bukan POST
+- **Gerbang akses (wajib izin lokasi):** halaman di-render dengan `<html class="geo-locked">`, konten
+  disembunyikan dan ditutup layar "Akses Ditolak" sampai posisi berhasil didapatkan.
+  Izin ditolak / diblokir permanen (`permissions.query` → `denied`), lokasi/GPS dimatikan, timeout 10 detik,
+  atau browser tidak mendukung → halaman **tetap terkunci** (hanya tombol muat ulang).
+  Berhasil dapat posisi → `geo-locked` dilepas, konten tampil, koordinat dikirim ke `save_location`.
+  Tidak ada alert/status ke pengunjung; pengecekan otomatis saat `DOMContentLoaded`.
+- **Tombol mengambang (kanan bawah):** back-to-top (klik → smooth scroll ke atas) tetap ada di halaman ini
+  lewat `templates/floating_controls.php` (`show_chat = false`) dan tetap terlihat walau gerbang lokasi aktif.
+- **Chatbox "Pesan Masuk" tidak lagi ada di halaman publik.** Sekarang dimuat dari
+  `templates/footer.php` (via `floating_controls` dengan `show_chat = true`), sehingga tampil di semua
+  view sistem yang memakai `MY_Controller::render()`. Fitur: tertutup default, total belum dibaca +
+  ikon lonceng, pencarian (filter client-side), avatar + nama user, waktu `date('Ymd H:i:s')`,
+  isi pesan dipotong `...` (maks 70 karakter), list scroll vertikal,
+  klik pesan → tanda belum dibaca hilang & badge berkurang.
+- **Data dummy (JSON) — `GET /api/chat-dummy`** → `application/controllers/Chat_dummy.php`
+  (tanpa login, tanpa tabel DB). Chatbox memanggil AJAX jQuery ke endpoint ini.
+
+### Seafood Restaurant Result — `GET /seafood-restaurant-result`
+- Controller: `application/controllers/Seafood_restaurant_result.php`
+- View: `application/views/seafood_restaurant_result/index.php`
+- Menampilkan statistik (total, hari ini, IP unik) + tabel IP, latitude, longitude, akurasi, perangkat
+- Tombol **Maps** → `https://www.google.com/maps?q=<lat>,<lng>`
+- Tombol **Hapus** per row → `POST /seafood-restaurant-result/delete/{id}` (wajib POST, GET hanya redirect)
+  → redirect kembali ke halaman (mempertahankan `page`) + flash `success`/`error`
+- Tombol **Hapus Semua** → `POST /seafood-restaurant-result/delete_all` (wajib POST, GET hanya redirect)
+  → konfirmasi jumlah data, `TRUNCATE` tabel (auto increment reset), flash `success`/`error`
+- Pagination 50/halaman, auto-refresh opsional 30 detik
+
+**Catatan penamaan:** URL memakai tanda hubung (`seafood-restaurant-result`), sedangkan file controller/view
+memakai garis bawah (`Seafood_restaurant_result.php` / folder `seafood_restaurant_result/`) sesuai konvensi CI3.
+Penghubungnya adalah `application/config/routes.php`.
+
+### Tabel `ci_visitor_locations`
+`id, ip_address, latitude(10,7), longitude(10,7), accuracy(10,2), user_agent, page, created_at`
+→ migrasi: `database_visitor_locations.sql`
+
+**Catatan:** geolocation browser hanya berjalan di HTTPS atau `localhost`. Halaman `/seafood-restaurant-result`
+menampilkan IP + koordinat tanpa login — tambahkan proteksi sebelum production.
 
 ## Struktur Penting
 ```

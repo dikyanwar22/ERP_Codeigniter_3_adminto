@@ -22,11 +22,8 @@ class Auth extends CI_Controller {
             if ($this->form_validation->run() === TRUE) {
                 $identity = $this->input->post('identity', true);
                 $password = $this->input->post('password', true);
-                // cari user by email atau NIK
                 $user = $this->db->where('email',$identity)->or_where('nik',$identity)->get('ci_users')->row();
-                // fix or_where group: pakai manual cek
                 if (!$user) {
-                    // coba lagi dengan where nik/email terpisah karena or_where tanpa group bisa ambigu
                     $user = $this->db->query("SELECT * FROM ci_users WHERE email = ? OR nik = ? LIMIT 1", [$identity,$identity])->row();
                 }
                 if (!$user) {
@@ -37,7 +34,6 @@ class Auth extends CI_Controller {
                     } elseif (!password_verify($password, $user->password)) {
                         $this->session->set_flashdata('error','Password salah');
                     } else {
-                        // sukses
                         $jabatan = $this->db->get_where('ci_jabatan',['id'=>$user->jabatan_id])->row();
                         $sess_user = [
                             'id' => $user->id,
