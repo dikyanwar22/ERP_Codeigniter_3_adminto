@@ -100,10 +100,12 @@ php -S 127.0.0.1:8081 -t C:\Users\dicky.anwar\Pictures\buku\adminto
   digulir (> 200px) dan otomatis hilang saat kembali ke atas.
 - **Chatbox "Pesan Masuk" tidak lagi ada di halaman publik.** Sekarang dimuat dari
   `templates/footer.php` (via `floating_controls` dengan `show_chat = true`), sehingga tampil di semua
-  view sistem yang memakai `MY_Controller::render()`. Fitur: tertutup default, total belum dibaca +
-  ikon lonceng, pencarian (filter client-side), avatar + nama user, waktu `date('Y-m-d H:i:s')`,
-  isi pesan dipotong `...` (maks 70 karakter), list scroll vertikal,
-  klik pesan → tanda belum dibaca hilang & badge berkurang.
+  view sistem yang memakai `MY_Controller::render()`. Data diambil otomatis saat halaman siap, sehingga
+  **badge di tombol chat selalu menampilkan angka total pesan** (mis. 14) walaupun panel tertutup atau
+  tidak ada pesan belum dibaca. Fitur lain: jumlah belum dibaca + ikon lonceng, pencarian
+  (filter client-side), avatar + nama user, waktu `date('Y-m-d H:i:s')`, isi pesan dipotong `...`
+  (maks 70 karakter), list scroll vertikal, klik pesan → tanda belum dibaca hilang & jumlah belum
+  dibaca berkurang (angka total tetap).
 - **Data dummy (JSON) — `GET /api/chat-dummy`** → `application/controllers/Chat_dummy.php`
   (tanpa login, tanpa tabel DB). Chatbox memanggil AJAX jQuery ke endpoint ini.
 

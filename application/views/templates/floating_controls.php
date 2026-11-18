@@ -153,7 +153,7 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
   <button type="button" id="chatToggle" class="fab-btn fab-chat" title="Pesan masuk"
           aria-label="Buka pesan masuk" aria-expanded="false" aria-controls="chatPanel">
     <i class="bi bi-chat-dots-fill"></i>
-    <span id="chatBadge" class="fab-badge" hidden>0</span>
+    <span id="chatBadge" class="fab-badge" title="Total pesan" aria-label="Total pesan">0</span>
   </button>
   <?php endif; ?>
 </div>
@@ -270,17 +270,15 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
       return n;
     }
 
-    function paintUnread() {
+    function paintCounters() {
       var n = countUnread();
+      var total = messages.length;
 
-      if (n > 0) {
-        $badge.text(n > 99 ? '99+' : n).prop('hidden', false);
-        $toggle.addClass('has-unread');
-      } else {
-        $badge.prop('hidden', true);
-        $toggle.removeClass('has-unread');
-      }
+      $badge.text(total > 99 ? '99+' : total);
+      $badge.attr('title', 'Total ' + total + ' pesan' + (n > 0 ? ' • ' + n + ' belum dibaca' : ''));
+      $badge.attr('aria-label', 'Total ' + total + ' pesan');
 
+      $toggle.toggleClass('has-unread', n > 0);
       $unread.text(n > 0 ? n + ' belum dibaca' : 'semua terbaca');
       $bell.toggleClass('is-ringing', n > 0);
     }
@@ -347,7 +345,7 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
       .done(function (res) {
         messages = (res && $.isArray(res.data)) ? res.data : [];
         loaded = true;
-        paintUnread();
+        paintCounters();
         renderList();
         $foot.text('Total ' + (res && res.total ? res.total : messages.length) +
                    ' pesan • dimuat ' + (res && res.generated_at ? res.generated_at : '-') + ' • data dummy');
@@ -404,12 +402,14 @@ $ocModifier = $above_bottom_bar ? ' fab-above-bottom-bar' : '';
       }
 
       if (changed) {
-        paintUnread();
+        paintCounters();
         $(this).removeClass('is-unread').find('.chat-dot').remove();
       }
     });
 
     $list.on('click', '#chatRetry', loadMessages);
+
+    loadMessages();
   });
 })(window.jQuery);
 </script>
